@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+  ],
+  "settings": {
+    "files.associations": {
+      "string.h": "c",
+      "serial.h": "c"
+    }
+  }
+}
