@@ -28,9 +28,8 @@ double filterPassaBaixa(double input, double *z1, double a, double b) {
 }
 
 int main() {
-    double fs = 10000.0; // Frequência de amostragem em Hz
-    double frequencia_corte = 5.0; // Frequência de corte desejada em Hz
-    double w0 = 2.0 * M_PI * frequencia_corte; // Frequência angular de corte
+    double fs = 1000.0; // Frequência de amostragem em Hz
+    double frequencia_corte = 100.0; // Frequência de corte desejada em Hz
 
     double a, b;
     calculateFilterCoefficients(frequencia_corte, fs, &a, &b);
@@ -38,39 +37,57 @@ int main() {
     double z1 = 0.0; // Estado anterior do filtro
 
     // Simulação do filtro com sinais de entrada
-    int num_samples = 500;
+    int num_samples = 100;
     double input_signal[num_samples];
     double output_signal[num_samples];
-    double impulse_response[num_samples];
 
-    // Geração do sinal de entrada (120 Hz)
-    double frequency_input = 120.0;
+    // Geração de diferentes sinais de entrada (por exemplo, seno, degrau, etc.)
+    double frequency1 = 5.0;
+    double frequency2 = 50.0;
+
     for (int i = 0; i < num_samples; i++) {
-        input_signal[i] = sin(2.0 * M_PI * frequency_input * i / fs);
+        input_signal[i] = sin(2.0 * M_PI * frequency1 * i / fs) + 0.5 * sin(2.0 * M_PI * frequency2 * i / fs);
         output_signal[i] = filterPassaBaixa(input_signal[i], &z1, a, b);
-
-        // Calculando a resposta ao impulso do filtro passa-baixa
-        double t = i / fs; // Tempo em segundos
-        impulse_response[i] = w0 * exp(-w0 * t) * (t >= 0);
     }
 
-    // Plotando gráficos usando o Gnuplot
+    // Salvando dados para a resposta em frequência em um arquivo
+    FILE *fp;
+    fp = fopen("data.txt", "w");
+    if (fp == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 1;
+    }
+
+    double w0 = 2.0 * M_PI * frequencia_corte; // Frequência angular de corte
+    for (double frequency = 0.0; frequency <= fs / 2.0; frequency += 1.0) {
+        double omega = 2.0 * M_PI * frequency;
+        double complex s = I * omega; // Variável complexa s
+        double complex H = (w0 / 20.0) / (s + (w0 / 20.0)); // Resposta em frequência H(s)
+        fprintf(fp, "%lf %lf\n", frequency, 20.0 * log10(cabs(H))); // Escreve no arquivo em dB
+    }
+
+    fclose(fp);
+
+    // Plotando gráfico usando o Gnuplot
     FILE *gnuplotPipe = popen("gnuplot -persist", "w");
     if (gnuplotPipe) {
-        // Gráfico do sinal de entrada e saída
-        fprintf(gnuplotPipe, "set xlabel 'Tempo (s)'\n");
+        fprintf(gnuplotPipe, "set xlabel 'Amostras'\n");
         fprintf(gnuplotPipe, "set ylabel 'Amplitude'\n");
         fprintf(gnuplotPipe, "plot '-' with lines title 'Sinal de Entrada', '-' with lines title 'Sinal de Saída'\n");
 
         for (int i = 0; i < num_samples; i++) {
-            fprintf(gnuplotPipe, "%lf %lf\n", i / fs, input_signal[i]);
+            fprintf(gnuplotPipe, "%d %lf\n", i, input_signal[i]);
         }
         fprintf(gnuplotPipe, "e\n");
 
         for (int i = 0; i < num_samples; i++) {
-            fprintf(gnuplotPipe, "%lf %lf\n", i / fs, output_signal[i]);
+            fprintf(gnuplotPipe, "%d %lf\n", i, output_signal[i]);
         }
         fprintf(gnuplotPipe, "e\n");
+
+        fprintf(gnuplotPipe, "set xlabel 'Frequência (Hz)'\n");
+        fprintf(gnuplotPipe, "set ylabel 'Magnitude (dB)'\n");
+        fprintf(gnuplotPipe, "plot 'data.txt' with lines title 'Resposta em Frequência'\n");
 
         fflush(gnuplotPipe);
         fprintf(gnuplotPipe, "exit\n");
