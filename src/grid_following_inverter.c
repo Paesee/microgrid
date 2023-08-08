@@ -11,6 +11,10 @@ void PowerControlInit(PowerControl *pc, int16_t v_poc, int32_t p_ref, int32_t q_
   pc->last_q_action = 0;
 }
 
+void setVpoc(PowerControl *pc, int32_t v_poc){
+  pc->v_poc = v_poc;
+}
+
 void setPQ(PowerControl *pc, int32_t p_ref, int32_t q_ref){
   pc->p_ref = p_ref;
   pc->q_ref = q_ref;
