@@ -78,6 +78,6 @@ int main() {
     } else {
         printf("Gnuplot não encontrado. Não é possível plotar os gráficos.\n");
     }
-
+    while(1){};
     return 0;
 }
