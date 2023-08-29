@@ -39,7 +39,7 @@ void calculatePQ(PowerControl *pc, float v_alpha, float v_beta, float i_alpha, f
 void executePQControl(PowerControl *pc, float *id, float *iq)
 {
   float p_error = pc->p_ref - pc->last_pf_meas;
-  float q_error = pc->last_qf_meas - pc->q_ref;
+  float q_error = pc->q_ref - pc->last_qf_meas;
 
   float i_direct = P_GAIN_1 * p_error + P_GAIN_2 * pc->last_p_error + P_GAIN_3 * pc->last_i_direct;
   float i_quad = Q_GAIN_1 * q_error + Q_GAIN_2 * pc->last_q_error + Q_GAIN_3 * pc->last_i_quad;
@@ -63,26 +63,20 @@ void CurrentControlInit(CurrentControl *cc)
   cc->sec_last_error = 0;
 }
 
-void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u, float *out_aux)
+void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u)
 {
-  float i_alpha = cos_wt * id - sin_wt * - iq;
+  float i_alpha = id * cos_wt - sin_wt * -iq;
 
   float error = i_alpha - i_meas;
 
-  float ctrl_action = C_GAIN_1 * cc->last_error + C_GAIN_2 * cc->sec_last_u - C_GAIN_3 * cc->last_u - C_GAIN_4 * cc->sec_last_u;
+  float ctrl_action = C_GAIN_1 * error + C_GAIN_2 * cc->sec_last_error - C_GAIN_3 * cc->last_u - C_GAIN_4 * cc->sec_last_u;
 
-  if(ctrl_action>500)
-    ctrl_action = 500;
-  if(ctrl_action<-500)
-    ctrl_action = -500;
+  float aux = (ctrl_action > 500) ? 500 : (ctrl_action < -500) ? -500 : ctrl_action;
 
   cc->sec_last_error = cc->last_error;
   cc->last_error = error;
   cc->sec_last_u = cc->last_u;
-  cc->last_u = ctrl_action;
-
-  float aux = ctrl_action * 0.002;
-  //aux = (aux > 1) ? 1 : (aux < -1) ? -1 : aux;
-  *u = aux;
-  *out_aux = i_alpha;
+  cc->last_u = aux;
+  
+  *u = aux * 0.002;
 }

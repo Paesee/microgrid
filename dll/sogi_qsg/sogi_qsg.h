@@ -1,5 +1,8 @@
 #define EXPORT __declspec(dllexport)
 
+#ifndef SOGI_QSG
+#define SOGI_QSG
+
 /* SOGI QSG + FLL */
 
 #define PI 3.14159265359
@@ -53,3 +56,5 @@ EXPORT int RMSCalculatorInit(RMSCalculator *rms, int size);
 EXPORT void add2RMSCalculator(RMSCalculator *rms, float data);
 EXPORT void calculateRMSvalue(RMSCalculator *rms, float *rms_value);
 EXPORT void RMSCalculatorFree(RMSCalculator *rms);
+
+#endif

@@ -62,13 +62,13 @@ typedef struct{
 } CurrentControl;
 
 // Current Controller Gains
-#define C_GAIN_1 0.0240
-#define C_GAIN_2 -0.0240
+#define C_GAIN_1 0.15
+#define C_GAIN_2 -0.15
 #define C_GAIN_3 -1.9999
-#define C_GAIN_4 1.0
+#define C_GAIN_4 0.9999
 
 // Current Controller Functions
 EXPORT void CurrentControlInit(CurrentControl *cc);
-EXPORT void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u, float *out_aux);
+EXPORT void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u);
 
 #endif

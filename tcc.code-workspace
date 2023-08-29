@@ -16,7 +16,8 @@
       "tuple": "c",
       "type_traits": "c",
       "utility": "c",
-      "grid_following_inverter.h": "c"
+      "grid_following_inverter.h": "c",
+      "grid_forming_inverter.h": "c"
     }
   }
 }
