@@ -1,6 +1,11 @@
 COMPILAÇÃO PARA GERAÇÃO DE ARQUIVOS .A 
 
-arm-xilinx-eabi-gcc -Iinclude -c archive_files\grid_forming_inverter\grid_forming_inverter.c -o archive_files\grid_forming_inverter\grid_forming_inverter.o
-arm-xilinx-eabi-gcc -Iinclude -c archive_files\grid_following_inverter\grid_following_inverter.c -o archive_files\grid_following_inverter\grid_following_inverter.o
-arm-xilinx-eabi-gcc -Iinclude -c archive_files\sogi_qsg\sogi_qsg.c -o archive_files\sogi_qsg\sogi_qsg.o
-arm-xilinx-eabi-ar rcs libtcc.a archive_files\grid_forming_inverter\grid_forming_inverter.o archive_files\grid_following_inverter\grid_following_inverter.o archive_files\sogi_qsg\sogi_qsg.c -o archive_files\sogi_qsg\sogi_qsg.o
+Para o controlador de Microrrede
+arm-xilinx-eabi-gcc -Iinclude -c archive_files\grid_forming_inverter.c -o archive_files\grid_forming_inverter.o
+arm-xilinx-eabi-ar rcs lib_ugrid_control.a archive_files\grid_forming_inverter.o
+
+Para os outros controladores
+arm-xilinx-eabi-gcc -Iinclude -c archive_files\grid_forming_inverter.c -o archive_files\grid_forming_inverter.o
+arm-xilinx-eabi-gcc -Iinclude -c archive_files\grid_following_inverter.c -o archive_files\grid_following_inverter.o
+arm-xilinx-eabi-gcc -Iinclude -c archive_files\sogi_qsg.c -o archive_files\sogi_qsg.o
+arm-xilinx-eabi-ar rcs libtcc.a archive_files\grid_forming_inverter.o archive_files\grid_following_inverter.o archive_files\sogi_qsg.o

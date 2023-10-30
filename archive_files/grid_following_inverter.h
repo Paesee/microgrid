@@ -24,12 +24,12 @@ Having in mind that the implemented controller is a PI and its difference equati
 Please, define the gains below.
 */
 
-#define P_GAIN_1  0.00035
-#define P_GAIN_2 -0.0002625
-#define P_GAIN_3  1
-#define Q_GAIN_1  0.00035
-#define Q_GAIN_2 -0.0002625
-#define Q_GAIN_3  1
+#define P_GAIN_1  0.001116
+#define P_GAIN_2 -0.001
+#define P_GAIN_3  -1
+#define Q_GAIN_1  0.001116
+#define Q_GAIN_2 -0.001
+#define Q_GAIN_3  -1
 
 /*
 Having in mind that the implemented power calculation method uses a Low Pass Filter and its difference equation looks like this:
@@ -39,7 +39,7 @@ Please, define the gains below.
 */
 
 #define LPF_GAIN_1 0.01867
-#define LPF_GAIN_2 0.9813
+#define LPF_GAIN_2 -0.9813
 
 // Power Controller Functions
 
@@ -60,13 +60,14 @@ typedef struct{
 } CurrentControl;
 
 // Current Controller Gains
-#define C_GAIN_1 0.15
-#define C_GAIN_2 -0.15
-#define C_GAIN_3 -1.9999
-#define C_GAIN_4 0.9999
+#define C_GAIN_1 0.086
+#define C_GAIN_2 -0.1399
+#define C_GAIN_3 0.05697
+#define C_GAIN_4 -1.964
+#define C_GAIN_5 0.9996
 
 // Current Controller Functions
 void CurrentControlInit(CurrentControl *cc);
-void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u);
+void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u, float *ref_wave);
 
 #endif

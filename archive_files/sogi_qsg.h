@@ -28,7 +28,7 @@ void executeSOGI(SOGIqsg *sogi, float meas_signal, float *alpha_signal, float *b
 
 /* CIRCULAR BUFFER */
 
-typedef struct
+typedef struct circular_buffer
 {
   float *buff;
   int size;

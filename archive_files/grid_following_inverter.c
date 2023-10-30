@@ -26,8 +26,8 @@ void calculatePQ(PowerControl *pc, float v_alpha, float v_beta, float i_alpha, f
   float q = 0.5 * (v_beta * i_alpha - v_alpha * i_beta);
 
   // Implements LOW PASS FILTER using the gains informed by the library user
-  p = LPF_GAIN_1 * p + LPF_GAIN_2 * pc->last_pf_meas;
-  q = LPF_GAIN_1 * q + LPF_GAIN_2 * pc->last_qf_meas;
+  p = LPF_GAIN_1 * p - LPF_GAIN_2 * pc->last_pf_meas;
+  q = LPF_GAIN_1 * q - LPF_GAIN_2 * pc->last_qf_meas;
 
   pc->last_pf_meas = p;
   pc->last_qf_meas = q;
@@ -41,8 +41,8 @@ void executePQControl(PowerControl *pc, float *id, float *iq)
   float p_error = pc->p_ref - pc->last_pf_meas;
   float q_error = pc->q_ref - pc->last_qf_meas;
 
-  float i_direct = P_GAIN_1 * p_error + P_GAIN_2 * pc->last_p_error + P_GAIN_3 * pc->last_i_direct;
-  float i_quad = Q_GAIN_1 * q_error + Q_GAIN_2 * pc->last_q_error + Q_GAIN_3 * pc->last_i_quad;
+  float i_direct = P_GAIN_1 * p_error + P_GAIN_2 * pc->last_p_error - P_GAIN_3 * pc->last_i_direct;
+  float i_quad = Q_GAIN_1 * q_error + Q_GAIN_2 * pc->last_q_error - Q_GAIN_3 * pc->last_i_quad;
 
   pc->last_p_error = p_error;
   pc->last_i_direct = i_direct;
@@ -63,13 +63,13 @@ void CurrentControlInit(CurrentControl *cc)
   cc->sec_last_error = 0;
 }
 
-void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u)
+void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u, float *ref_wave)
 {
   float i_alpha = id * cos_wt - sin_wt * -iq;
 
   float error = i_alpha - i_meas;
 
-  float ctrl_action = C_GAIN_1 * error + C_GAIN_2 * cc->sec_last_error - C_GAIN_3 * cc->last_u - C_GAIN_4 * cc->sec_last_u;
+  float ctrl_action = C_GAIN_1 * error + C_GAIN_2 * cc->last_error + C_GAIN_3 * cc->sec_last_error - C_GAIN_4 * cc->last_u - C_GAIN_5 * cc->sec_last_u;
 
   float aux = (ctrl_action > 500) ? 500 : (ctrl_action < -500) ? -500 : ctrl_action;
 
@@ -79,4 +79,5 @@ void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt,
   cc->last_u = aux;
   
   *u = aux * 0.002;
+  *ref_wave = i_alpha;
 }
