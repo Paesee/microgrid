@@ -127,15 +127,18 @@ typedef struct {
 } GridSyncController;
 
 // Grid Synchronization Controller Gains
-#define W_GAIN_1 1
-#define W_GAIN_2 -0.995
+#define W_GAIN_1 5
+#define W_GAIN_2 -4.96
 #define W_GAIN_3 -1
-#define U_GAIN_1 1
-#define U_GAIN_2 -0.995
+#define U_GAIN_1 5
+#define U_GAIN_2 -4.96
 #define U_GAIN_3 -1
 // Limitation to control outputs
-#define MAX_RATE_CHANGE_W 0.006283 // dw/dt < 2 Hz/s 
-#define MAX_RATE_CHANGE_V 0.005 // dv/dt < 10 V/s 
+#define MAX_RATE_CHANGE_W 0.031415 // dw/dt < 60 Hz/s 
+#define MAX_RATE_CHANGE_V 0.005000 // dv/dt < 10 V/s 
+#define MAX_W_SYNC 6.2831
+#define MAX_V_SYNC 5
+#define MAX_PHASE_ERROR 6.283185
 
 void GridSyncControllerInit(GridSyncController *self);
 void executeThetaSyncControl(GridSyncController *self, float grid_theta, float ugrid_theta, float *output, float *phase_error);

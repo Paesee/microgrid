@@ -59,4 +59,24 @@ void add2RMSCalculator(RMSCalculator *rms, float data);
 void calculateRMSvalue(RMSCalculator *rms, float *rms_value);
 void RMSCalculatorFree(RMSCalculator *rms);
 
+/* SRF PLL */
+
+#define SRF_TS     0.0005
+#define SRF_GAIN_1 0.6627
+#define SRF_GAIN_2 -0.6372
+#define SRF_GAIN_3 -1
+
+typedef struct
+{
+  float omega0;
+  float last_vq;
+  float last_pi_output;
+  float last_sum;
+  float last_theta;
+} SRFpll;
+
+void SRFpllInit(SRFpll *self, float w0);
+void executeSRFpll(SRFpll *self, float x_alpha, float x_beta, float *output);
+void resetSRFpll(SRFpll *self);
+
 #endif

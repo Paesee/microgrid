@@ -80,8 +80,8 @@ void DroopControlInit(Droop *droop, float p_max, float q_max, float v0, float w0
   droop->n = (float)delta_v / (2.0 * q_max);
   droop->last_pf_meas = 0;
   droop->last_qf_meas = 0;
-  droop->delta_v = delta_v;
-  droop->delta_w = delta_w;
+  droop->delta_v = 0.5*delta_v;
+  droop->delta_w = 0.5*delta_w;
 }
 
 // Function used to calculate power dispatched from the Converter
@@ -215,15 +215,14 @@ void GFormExecuteCurrentControl(GFormCurrentControl *cc, float i_ref, float i_me
 
   float ctrl_action = GFC_GAIN * error;
 
-  float aux = (ctrl_action > 500) ? 500 : (ctrl_action < -500) ? -500
-                                                               : ctrl_action;
+  //float aux = (ctrl_action > 500) ? 500 : (ctrl_action < -500) ? -500 : ctrl_action;
 
   cc->sec_last_error = cc->last_error;
   cc->last_error = error;
   cc->sec_last_u = cc->last_u;
-  cc->last_u = aux;
+  cc->last_u = ctrl_action;
 
-  *u = aux * 0.002;
+  *u = ctrl_action * 0.002;
 }
 
 // GRID SYNCHRONIZATION FUNCTIONS IMPLEMENTATION
@@ -243,11 +242,21 @@ void executeThetaSyncControl(GridSyncController *self, float grid_theta, float u
   float error = grid_theta - ugrid_theta;
   float y = W_GAIN_1 * error + W_GAIN_2 * self->w_last_error - W_GAIN_3 * self->w_last_output;
 
-  float rate_of_change = y - self->w_last_output;
-  if(rate_of_change > MAX_RATE_CHANGE_W)
-    y = self->w_last_output + MAX_RATE_CHANGE_W;
-  if(rate_of_change < -MAX_RATE_CHANGE_W)
-    y = self->w_last_output - MAX_RATE_CHANGE_W;
+  //float rate_of_change = y - self->w_last_output;
+  //if (rate_of_change > MAX_RATE_CHANGE_W)
+  //  y = self->w_last_output + MAX_RATE_CHANGE_W;
+  //if (rate_of_change < -MAX_RATE_CHANGE_W)
+  //  y = self->w_last_output - MAX_RATE_CHANGE_W;
+
+  //if (y > MAX_W_SYNC)
+  //  y = MAX_W_SYNC;
+  //if (y < -MAX_W_SYNC)
+  //  y = -MAX_W_SYNC;
+
+  //if(error > +MAX_PHASE_ERROR)
+  //  error = +MAX_PHASE_ERROR;
+  //if(error < -MAX_PHASE_ERROR)
+  //  error = -MAX_PHASE_ERROR;
 
   self->w_last_error = error;
   self->w_last_output = y;
@@ -260,11 +269,11 @@ void executeVoltageSyncControl(GridSyncController *self, float grid_voltage, flo
   float error = grid_voltage - ugrid_voltage;
   float y = U_GAIN_1 * error + U_GAIN_2 * self->u_last_error - U_GAIN_3 * self->u_last_output;
 
-  float rate_of_change = y - self->u_last_output;
-  if(rate_of_change > MAX_RATE_CHANGE_V)
-    y = self->u_last_output + MAX_RATE_CHANGE_V;
-  if(rate_of_change < -MAX_RATE_CHANGE_V)
-    y = self->u_last_output - MAX_RATE_CHANGE_V;
+  // float rate_of_change = y - self->u_last_output;
+  // if(rate_of_change > MAX_RATE_CHANGE_V)
+  //   y = self->u_last_output + MAX_RATE_CHANGE_V;
+  // if(rate_of_change < -MAX_RATE_CHANGE_V)
+  //   y = self->u_last_output - MAX_RATE_CHANGE_V;
 
   self->u_last_error = error;
   self->u_last_output = y;
