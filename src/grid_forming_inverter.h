@@ -107,7 +107,7 @@ typedef struct
 } GFormCurrentControl;
 
 // Current Controller Gains
-#define GFC_GAIN 5.9
+#define GFC_GAIN 10
 
 // Current Controller Functions
 void GFormCurrentControlInit(GFormCurrentControl *cc);
