@@ -1,0 +1,5558 @@
+version = 4.2
+
+//
+// Saved by sw version: 2023.4
+//
+
+model "microgrid_r1" {
+    configuration {
+        hil_device = "HIL402"
+        hil_configuration_id = 3
+        simulation_method = exact
+        simulation_time_step = 2e-6
+        simulation_discret_scaling = 1.0
+        dsp_timer_periods = 100e-6, 50e-3
+        ss_calc_method = "systematic elimination"
+        enb_pole_shift = True
+        enb_gds_oversampling = True
+        show_modes = False
+        device_ao_limit_enable = False
+        reset_analog_outputs_on_sim_stop = True
+        reset_analog_outputs_on_sim_stop_mode = Offset values
+        reset_digital_outputs_on_sim_stop = True
+        vhil_adio_loopback = False
+        cpl_stb = True
+        enb_dep_sw_detect = False
+        code_section = "internal memory"
+        data_section = "internal memory"
+        sys_sp_rate_1 = 0.0001
+        sys_sp_rate_2 = 0.05
+        sys_real_type_precision = "default"
+        user_real_type_precision = "default"
+        sys_cpu_optimization = "high"
+        user_cpu_optimization = "high"
+        user_cpu_part_option = "default"
+        matrix_based_reduction = True
+        cpl_dynamics_analysis = False
+        export_ss_to_pickle = False
+        ground_scope_core = True
+        dss_num_tol = 1e-15
+        cce_platform = "generic"
+        cce_use_relative_names = False
+        cce_type_mapping_real = "double"
+        cce_type_mapping_uint = "unsigned int"
+        cce_type_mapping_int = "int"
+        cce_platform = "generic"
+        cce_use_relative_names = False
+        cce_type_mapping_real = "double"
+        cce_type_mapping_uint = "unsigned int"
+        cce_type_mapping_int = "int"
+        cce_directory = ""
+        cce_custom_type_int = ""
+        cce_custom_type_uint = ""
+        cce_custom_type_real = ""
+        tunable_params = "component defined"
+        sp_compiler_type = "C compiler"
+        sig_stim = "off"
+        export_resource_list = ""
+        export_dependency_list = ""
+        excluded_resource_list = ""
+        export_out_file = ""
+        export_lock_top_level = True
+        export_encrypt_library = True
+        export_encrypt_resources = True
+        dae_solver = "BDF"
+        max_sim_step = 1e-4
+        simulation_time = 1.0
+        abs_tol = 1e-3
+        rel_tol = 1e-3
+        init_sim_step = 1e-6
+        r_on_sw = 1e-3
+        v_on_diode = 0.2
+        data_sampling_rate = 0
+        feedthrough_validation_error_level = error
+    }
+
+    component Subsystem Root {
+        component "core/Single Phase Inverter" "Grid Following Inverter" {
+            Sa_bot_I = "True"
+            Sa_top_I = "True"
+            Sb_bot_I = "True"
+            Sb_top_I = "True"
+            carrier_freq = "20e3"
+            ctrl_src = "Internal modulator"
+            d_time = "1e-6"
+            execution_rate = "TS_CI"
+            fvd_def_method = "LUT"
+            load_mode = "on either"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8560, 8456
+            size = 127, 256
+        ]
+
+        component "core/Voltage Source" Vcc1 {
+            init_const_value = "500"
+        }
+        [
+            position = 8360, 8456
+            rotation = right
+        ]
+
+        component Subsystem "LCL Filter" {
+            layout = dynamic
+            component "core/Inductor" L1 {
+            }
+            [
+                position = 7952, 8120
+            ]
+
+            component "core/Resistor" R1 {
+                resistance = "0.5"
+            }
+            [
+                position = 8040, 8120
+            ]
+
+            component "core/Capacitor" C1 {
+                capacitance = "44e-6"
+                initial_voltage = "311"
+                signal_access = "Inherit"
+            }
+            [
+                position = 8208, 8312
+                rotation = right
+            ]
+
+            component "core/Resistor" R2 {
+                resistance = "0.5"
+            }
+            [
+                position = 8488, 8120
+            ]
+
+            component "core/Voltage Measurement" vm_1 {
+                execution_rate = "TS_CI"
+                feed_forward = "true"
+                sig_output = "True"
+                signal_access = "Public"
+            }
+            [
+                position = 8312, 8288
+                rotation = right
+                size = 64, 32
+            ]
+
+            component "core/Current Measurement" am_1 {
+                execution_rate = "TS_CI"
+                feed_forward = "true"
+                sig_output = "True"
+                signal_access = "Public"
+            }
+            [
+                position = 8136, 8120
+                size = 64, 32
+            ]
+
+            component "core/Inductor" L2 {
+            }
+            [
+                position = 8392, 8120
+            ]
+
+            component "core/Current Measurement" am_2 {
+                execution_rate = "TS_CI"
+                sig_output = "True"
+                signal_access = "Public"
+            }
+            [
+                position = 8592, 8120
+                size = 64, 32
+            ]
+
+            component "core/Resistor" R3 {
+                resistance = "0.5"
+            }
+            [
+                position = 8208, 8200
+                rotation = right
+            ]
+
+            port Vout+ {
+                position = right:1
+                kind = pe
+            }
+            [
+                position = 8688, 8120
+                rotation = down
+            ]
+
+            port Vin+ {
+                position = left:1
+                kind = pe
+            }
+            [
+                position = 7872, 8120
+            ]
+
+            port Vin- {
+                position = left:2
+                kind = pe
+                direction =  in
+            }
+            [
+                position = 7872, 8384
+            ]
+
+            port i_l1 {
+                position = auto:auto
+                kind = sp
+                direction =  in
+                sp_type {
+                    default = inherit
+                    readonly = True
+                }
+            }
+            [
+                position = 8136, 8056
+                rotation = left
+            ]
+
+            port v_c {
+                position = auto:auto
+                kind = sp
+                direction =  in
+                sp_type {
+                    default = inherit
+                    readonly = True
+                }
+            }
+            [
+                position = 8376, 8288
+            ]
+
+            port Vout- {
+                position = right:2
+                kind = pe
+            }
+            [
+                position = 8688, 8384
+                rotation = down
+            ]
+
+            port i_l2 {
+                position = auto:auto
+                kind = sp
+                direction =  in
+                sp_type {
+                    default = inherit
+                    readonly = True
+                }
+            }
+            [
+                position = 8592, 8056
+                rotation = left
+            ]
+
+            junction Junction6 pe
+            [
+                position = 8312, 8384
+            ]
+
+            junction Junction7 pe
+            [
+                position = 8216, 8384
+            ]
+
+            junction Junction8 pe
+            [
+                position = 8312, 8120
+            ]
+
+            junction Junction9 pe
+            [
+                position = 8208, 8120
+            ]
+
+            connect R1.p_node L1.n_node as Connection6
+            connect L1.p_node Vin+ as Connection53
+            connect am_1.out i_l1 as Connection56
+            [
+                breakpoints = 8136, 8080
+            ]
+            connect vm_1.out v_c as Connection61
+            connect R1.n_node am_1.p_node as Connection27
+            connect vm_1.n_node Junction6 as Connection74
+            connect Vout- Junction6 as Connection76
+            connect Junction6 Junction7 as Connection87
+            [
+                breakpoints = 8312, 8384; 8312, 8384; 8272, 8384
+            ]
+            connect Junction7 Vin- as Connection88
+            [
+                breakpoints = 8216, 8384; 8216, 8384; 8208, 8384; 8216, 8384
+            ]
+            connect C1.n_node Junction7 as Connection89
+            connect am_2.out i_l2 as Connection96
+            [
+                breakpoints = 8592, 8080
+            ]
+            connect vm_1.p_node Junction8 as Connection97
+            connect L2.p_node Junction8 as Connection99
+            connect L2.n_node R2.p_node as Connection100
+            connect R2.n_node am_2.p_node as Connection101
+            connect am_2.n_node Vout+ as Connection102
+            connect Junction8 Junction9 as Connection104
+            [
+                breakpoints = 8312, 8120; 8312, 8120; 8312, 8120
+            ]
+            connect Junction9 am_1.n_node as Connection105
+            [
+                breakpoints = 8216, 8120
+            ]
+            connect R3.p_node Junction9 as Connection106
+            connect R3.n_node C1.p_node as Connection107
+        }
+        [
+            position = 8720, 8456
+            size = 80, 232
+        ]
+
+        component "core/Resistor" Rpv2 {
+            resistance = "1e-9"
+        }
+        [
+            position = 8408, 8360
+            rotation = down
+        ]
+
+        component "core/C function" sr_pll {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+struct SOGIqsg {
+  float w0;
+  float last_alpha_signal;
+  float last_beta_signal;
+  float last_w_meas;
+  float last_w;
+  float proportional_gain;
+  float fll_gain;
+};
+
+struct CircularBuffer{
+  float *buff;
+  int size;
+  int start;
+  int end;
+  int count;
+};
+
+ struct RMSCalculator {
+  struct CircularBuffer square_buffer;
+  int size;
+  float sum;
+};
+
+struct SOGIqsg v_sogi;
+float v_alpha = 0;
+float v_beta = 0;
+float v_freq = 60;
+
+struct SOGIqsg i_sogi;
+float i_alpha = 0;
+float i_beta = 0;
+float i_freq = 60;
+
+struct RMSCalculator rms_calc;
+int size = 167; 
+float v_rms = 0;
+float peak_factor = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CI"
+            init_fnc = "/*Begin code section*/
+v_alpha = 0;
+v_beta = 0;
+v_freq = 60;
+i_alpha = 0;
+i_beta = 0;
+i_freq = 60;
+size = 167; 
+v_rms = 0;
+peak_factor = 0;
+
+SOGIInit(&v_sogi, v_freq, 0.2, 0.02);
+SOGIInit(&i_sogi, i_freq, 0.6, 0.02);
+RMSCalculatorInit(&rms_calc, size);
+/*End code section*/"
+            input_terminals = "real in_v;real in_i;"
+            input_terminals_dimensions = "1;1"
+            input_terminals_feedthrough = "True;True"
+            input_terminals_show_labels = "False;False"
+            output_fnc = "/*Begin code section*/
+//Execução da Rotina do SOGI para a Tensão
+executeSOGI(&v_sogi, in_v, &v_alpha, &v_beta, &v_freq);
+//Execução da Rotina do SOGI para a Corrente
+executeSOGI(&i_sogi, in_i, &i_alpha, &i_beta, &i_freq);
+//Execução do Calculo de Tensão RMS
+add2RMSCalculator(&rms_calc, in_v);
+calculateRMSvalue(&rms_calc, &v_rms);
+peak_factor = (v_rms <= 0) ? -1 : (1.0 / (v_rms * 1.4142));
+//Atribuição dos valores as saídas do bloco
+out_v_alpha = v_alpha;
+out_v_beta = v_beta;
+out_freq = v_freq;
+out_i_alpha = i_alpha;
+out_i_beta = i_beta;
+out_v_rms = v_rms;
+out_sen_wt = v_beta * peak_factor; 
+out_cos_wt = v_alpha * peak_factor;
+/*End code section*/"
+            output_terminals = "real out_v_alpha;real out_v_beta;real out_freq;real out_i_alpha;real out_i_beta;real out_v_rms;real out_sen_wt;real out_cos_wt;"
+            output_terminals_dimensions = "1;1;1;1;1;inherit;inherit;inherit"
+            output_terminals_feedthrough = "True;True;True;True;True;True;True;True"
+            output_terminals_show_labels = "False;False;False;False;False;False;False;False"
+        }
+        [
+            position = 8424, 9248
+            size = 104, 648
+        ]
+
+        component "core/Probe" sr_vpoi {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8192, 9016
+            rotation = down
+        ]
+
+        component "core/Probe" sr_il2 {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 8192, 9504
+            rotation = down
+        ]
+
+        component "core/C function" sr_pq_control {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.c"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.c"
+            arb_defs = "/*Begin code section*/
+struct PowerControl {
+  float p_ref;
+  float q_ref;
+  float last_p_error;
+  float last_i_direct;
+  float last_q_error;
+  float last_i_quad;
+  float last_pf_meas;
+  float last_qf_meas;
+  float last_p_meas;
+  float last_q_meas;
+};
+
+struct PowerControl pc;
+    
+float p_ref = 0;
+float q_ref = 0;
+float id = 0;
+float iq = 0;
+float p = 0;
+float q = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CP"
+            init_fnc = "/*Begin code section*/
+p_ref = 0;
+q_ref = 0;
+id = 0;
+iq = 0;
+p = 0;
+q = 0;
+
+PowerControlInit(&pc, 0, 0);
+/*End code section*/"
+            input_terminals = "real in_v_alpha;real in_v_beta;real in_i_alpha;real in_i_beta;real in_p_ref;real in_q_ref;uint in_enabled;"
+            input_terminals_dimensions = "1;1;1;1;1;1;1"
+            input_terminals_feedthrough = "True;True;True;True;True;True;True"
+            input_terminals_show_labels = "False;False;False;False;False;False;False"
+            output_fnc = "/*Begin code section*/
+if(in_enabled == 1){
+    //Entrada de potencia ativa em rampa
+    if(in_p_ref > p_ref) p_ref += 1;
+    if(in_p_ref < p_ref) p_ref -= 1;
+    //Entrada de potencia reativa em rampa
+    if(in_q_ref > q_ref) q_ref += 1;
+    if(in_q_ref < q_ref) q_ref -= 1;
+    //Define PQ conforme input do HIL SCADA
+    setPQ(&pc, p_ref, q_ref);
+    //Calcula PQ baseado nos sinais do PLL
+    calculatePQ(&pc, in_v_alpha, in_v_beta, in_i_alpha, in_i_beta, &p, &q);
+    //Executa a rotina de controle de potência
+    executePQControl(&pc, &id, &iq);
+    //Atribuiu os valores de saída do bloco
+    out_p = p;
+    out_q = q;
+    out_id = id;
+    out_iq = iq;
+}else{
+    out_p = 0;
+    out_q = 0;
+    out_id = 0;
+    out_iq = 0;
+}
+/*End code section*/"
+            output_terminals = "real out_id;real out_iq;real out_p;real out_q;"
+            output_terminals_dimensions = "inherit;inherit;inherit;inherit"
+            output_terminals_feedthrough = "True;True;True;True"
+            output_terminals_show_labels = "False;False;False;False"
+        }
+        [
+            position = 9088, 9184
+            size = 112, 400
+        ]
+
+        component "core/Rate Transition" "Rate Transition1" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8928, 8960
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition2" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8928, 9016
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition3" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8928, 9072
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition4" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8928, 9128
+            size = 32, 32
+        ]
+
+        component "core/C function" sr_i_control {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+struct CurrentControl{
+  float last_u;
+  float sec_last_u;
+  float last_error;
+  float sec_last_error;
+};
+
+struct CurrentControl cc;
+    
+float u = 0;
+float ref = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CI"
+            init_fnc = "/*Begin code section*/
+u = 0;
+ref = 0;
+CurrentControlInit(&cc);
+/*End code section*/"
+            input_terminals = "real in_id;real in_iq;real in_sin_wt;real in_cos_wt;real in_i_meas;uint in_enabled;"
+            input_terminals_dimensions = "1;1;1;1;1;1"
+            input_terminals_feedthrough = "True;True;True;True;True;True"
+            input_terminals_show_labels = "False;False;False;False;False;False"
+            output_fnc = "/*Begin code section*/
+if(in_enabled == 1){
+    //Executa a rotina de controle de corrente
+    executeCurrentControl(&cc, in_id, in_iq, in_sin_wt, in_cos_wt, in_i_meas, &u, &ref);
+    //Atribuiu os valores de saída do bloco
+    out_ua = u;
+    out_ub = -u;
+    out_ref = ref;
+}else{
+    out_ua = 0;
+    out_ub = 0;
+    out_ref = 0;
+}
+/*End code section*/"
+            output_terminals = "real out_ua;real out_ub;real out_ref;"
+            output_terminals_dimensions = "1;1;1"
+            output_terminals_feedthrough = "True;True;True"
+            output_terminals_show_labels = "False;False;False"
+        }
+        [
+            position = 9704, 9128
+            size = 112, 400
+        ]
+
+        component "core/Rate Transition" "Rate Transition16" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8928, 9296
+            size = 32, 32
+        ]
+
+        component "core/C function" fr_sogi_qsg {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+struct SOGIqsg {
+  float w0;
+  float last_alpha_signal;
+  float last_beta_signal;
+  float last_w_meas;
+  float last_w;
+  float proportional_gain;
+  float fll_gain;
+};
+
+struct CircularBuffer{
+  float *buff;
+  int size;
+  int start;
+  int end;
+  int count;
+};
+
+ struct RMSCalculator {
+  struct CircularBuffer square_buffer;
+  int size;
+  float sum;
+};
+
+struct SOGIqsg v_sogi;
+float v_alpha = 0;
+float v_beta = 0;
+float v_freq = 60;
+
+struct SOGIqsg i_sogi;
+float i_alpha = 0;
+float i_beta = 0;
+float i_freq = 60;
+
+struct RMSCalculator rms_calc;
+int size = 167; 
+float v_rms = 0;
+float peak_factor = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CI"
+            init_fnc = "/*Begin code section*/
+v_alpha = 0;
+v_beta = 0;
+v_freq = 60;
+i_alpha = 0;
+i_beta = 0;
+i_freq = 60;
+size = 167; 
+v_rms = 0;
+peak_factor = 0;
+
+SOGIInit(&v_sogi, v_freq, 0.25, 0.2);
+SOGIInit(&i_sogi, i_freq, 0.5, 0.2);
+RMSCalculatorInit(&rms_calc, size);
+/*End code section*/"
+            input_terminals = "real in_v;real in_i;uint in_enabled;"
+            input_terminals_dimensions = "1;1;1"
+            input_terminals_feedthrough = "True;True;True"
+            input_terminals_show_labels = "False;False;False"
+            output_fnc = "/*Begin code section*/
+if(in_enabled)
+{
+    //Execução da Rotina do SOGI para a Tensão
+    executeSOGI(&v_sogi, in_v, &v_alpha, &v_beta, &v_freq);
+    //Execução da Rotina do SOGI para a Corrente
+    executeSOGI(&i_sogi, in_i, &i_alpha, &i_beta, &i_freq);
+    //Execução do Calculo de Tensão RMS
+    add2RMSCalculator(&rms_calc, in_v);
+    calculateRMSvalue(&rms_calc, &v_rms);
+    peak_factor = (v_rms <= 0) ? -1 : (1.0 / (v_rms * 1.4142));
+    //Atribuição dos valores as saídas do bloco
+    out_v_alpha = v_alpha;
+    out_v_beta = v_beta;
+    out_freq = v_freq;
+    out_i_alpha = i_alpha;
+    out_i_beta = i_beta;
+    out_v_rms = v_rms;
+    out_sen_wt = v_beta * peak_factor; 
+    out_cos_wt = v_alpha * peak_factor;
+}else{
+    out_v_alpha = 0;
+    out_v_beta = 0;
+    out_freq = 0;
+    out_i_alpha = 0;
+    out_i_beta = 0;
+    out_v_rms = 0;
+    out_sen_wt = 0; 
+    out_cos_wt = 0;
+}
+/*End code section*/"
+            output_terminals = "real out_v_alpha;real out_v_beta;real out_freq;real out_i_alpha;real out_i_beta;real out_v_rms;real out_sen_wt;real out_cos_wt;"
+            output_terminals_dimensions = "1;1;1;1;1;inherit;inherit;inherit"
+            output_terminals_feedthrough = "True;True;True;True;True;True;True;True"
+            output_terminals_show_labels = "False;False;False;False;False;False;False;False"
+        }
+        [
+            position = 8448, 6584
+            size = 104, 648
+        ]
+
+        component "core/Probe" fr_valpha {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8688, 6336
+        ]
+
+        component "core/Probe" fr_vc {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8224, 6352
+            rotation = down
+        ]
+
+        component "core/Probe" fr_il1 {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 8224, 6584
+            rotation = down
+        ]
+
+        component "core/C function" fr_prop_i_control {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+struct GFormCurrentControl{
+  float last_u;
+  float sec_last_u;
+  float last_error;
+  float sec_last_error;
+};
+
+struct GFormCurrentControl cc;
+    
+float u = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CI"
+            init_fnc = "/*Begin code section*/
+u = 0;
+GFormCurrentControlInit(&cc);
+/*End code section*/"
+            input_terminals = "real in_u_cv;real in_i_meas;uint in_enabled;int in_is_tied;"
+            input_terminals_dimensions = "1;1;1;inherit"
+            input_terminals_feedthrough = "True;True;True;True"
+            input_terminals_show_labels = "False;False;False;False"
+            output_fnc = "/*Begin code section*/
+if(in_enabled && !in_is_tied){
+    //Executa a rotina de controle de corrente
+    GFormExecuteCurrentControl(&cc, in_u_cv, in_i_meas, &u);
+    //Atribuiu os valores de saída do bloco
+    out_ua = u;
+    out_ub = -u;
+}else{
+    out_ua = 0;
+    out_ub = 0;
+}
+/*End code section*/"
+            output_terminals = "real out_ua;real out_ub;"
+            output_terminals_dimensions = "1;1"
+            output_terminals_feedthrough = "True;True"
+            output_terminals_show_labels = "False;False"
+        }
+        [
+            position = 10376, 6472
+            size = 112, 400
+        ]
+
+        component "core/Rate Transition" "Rate Transition5" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 10248, 6296
+            size = 32, 32
+        ]
+
+        component "core/Single Phase Inverter" "Grid Forming Inverter" {
+            Sa_bot_I = "True"
+            Sa_top_I = "True"
+            Sb_bot_I = "True"
+            Sb_top_I = "True"
+            carrier_freq = "20e3"
+            ctrl_src = "Internal modulator"
+            d_time = "1e-6"
+            execution_rate = "TS_CI"
+            fvd_def_method = "LUT"
+            load_mode = "on either"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8560, 7928
+            size = 127, 256
+        ]
+
+        component "core/Voltage Source" Vcc {
+            init_const_value = "500"
+        }
+        [
+            position = 8360, 7928
+            rotation = right
+        ]
+
+        component "core/Voltage Measurement" vpoi1 {
+            execution_rate = "TS_CI"
+            feed_forward = "true"
+            sig_output = "True"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8976, 7976
+            rotation = right
+            size = 64, 32
+        ]
+
+        component Subsystem "LC Filter" {
+            layout = dynamic
+            component "core/Inductor" L1 {
+            }
+            [
+                position = 7952, 8120
+            ]
+
+            component "core/Resistor" R1 {
+                resistance = "0.5"
+            }
+            [
+                position = 8040, 8120
+            ]
+
+            component "core/Capacitor" C1 {
+                capacitance = "44e-6"
+            }
+            [
+                position = 8216, 8256
+                rotation = right
+            ]
+
+            component "core/Voltage Measurement" vm_1 {
+                execution_rate = "TS_CI"
+                feed_forward = "true"
+                sig_output = "True"
+                signal_access = "Public"
+            }
+            [
+                position = 8312, 8216
+                rotation = right
+                size = 64, 32
+            ]
+
+            component "core/Current Measurement" am_1 {
+                execution_rate = "TS_CI"
+                feed_forward = "true"
+                sig_output = "True"
+                signal_access = "Public"
+            }
+            [
+                position = 8136, 8120
+                size = 64, 32
+            ]
+
+            component "core/Resistor" R2 {
+                resistance = "0.5"
+            }
+            [
+                position = 8216, 8168
+                rotation = right
+            ]
+
+            port Vout+ {
+                position = right:1
+                kind = pe
+            }
+            [
+                position = 8504, 8120
+                rotation = down
+            ]
+
+            port Vin+ {
+                position = left:1
+                kind = pe
+            }
+            [
+                position = 7872, 8120
+            ]
+
+            port Vin- {
+                position = left:2
+                kind = pe
+                direction =  in
+            }
+            [
+                position = 7872, 8312
+            ]
+
+            port i_l1 {
+                position = auto:auto
+                kind = sp
+                direction =  in
+                sp_type {
+                    default = inherit
+                    readonly = True
+                }
+            }
+            [
+                position = 8136, 8056
+                rotation = left
+            ]
+
+            port v_c {
+                position = auto:auto
+                kind = sp
+                direction =  in
+                sp_type {
+                    default = inherit
+                    readonly = True
+                }
+            }
+            [
+                position = 8376, 8216
+            ]
+
+            port Vout- {
+                position = right:2
+                kind = pe
+            }
+            [
+                position = 8504, 8312
+                rotation = down
+            ]
+
+            junction Junction6 pe
+            [
+                position = 8312, 8312
+            ]
+
+            junction Junction7 pe
+            [
+                position = 8216, 8312
+            ]
+
+            junction Junction8 pe
+            [
+                position = 8312, 8120
+            ]
+
+            junction Junction9 pe
+            [
+                position = 8216, 8120
+            ]
+
+            connect R1.p_node L1.n_node as Connection6
+            connect L1.p_node Vin+ as Connection53
+            connect am_1.out i_l1 as Connection56
+            [
+                breakpoints = 8136, 8080
+            ]
+            connect vm_1.out v_c as Connection61
+            connect R1.n_node am_1.p_node as Connection27
+            connect vm_1.n_node Junction6 as Connection74
+            connect Vout- Junction6 as Connection76
+            connect Vin- Junction7 as Connection91
+            connect Junction7 Junction6 as Connection92
+            [
+                breakpoints = 8208, 8312; 8216, 8312; 8208, 8312; 8216, 8312; 8216, 8312; 8272, 8312; 8312, 8312
+            ]
+            connect C1.n_node Junction7 as Connection93
+            connect vm_1.p_node Junction8 as Connection95
+            connect Vout+ Junction8 as Connection97
+            connect Junction8 Junction9 as Connection99
+            [
+                breakpoints = 8312, 8120; 8312, 8120
+            ]
+            connect Junction9 am_1.n_node as Connection100
+            [
+                breakpoints = 8216, 8120
+            ]
+            connect R2.p_node Junction9 as Connection101
+            connect R2.n_node C1.p_node as Connection102
+        }
+        [
+            position = 8720, 7928
+            size = 80, 232
+        ]
+
+        component "core/Resistor" Rpv1 {
+            resistance = "1e-9"
+        }
+        [
+            position = 8408, 7832
+            rotation = down
+        ]
+
+        component "core/C function" fr_v_control {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+struct VoltageControl {
+    float last_u;
+    float sec_last_u;
+    float last_error;
+    float sec_last_error;
+    float last_theta;
+};
+
+struct VoltageControl vc;
+
+//Voltage control variables
+float v_ref_wave = 0;
+float u = 0;
+float ug_theta = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CV"
+            init_fnc = "/*Begin code section*/
+// Variables initialization
+u = 0;
+v_ref_wave = 0;
+ug_theta = 0;
+// Controllers initialization
+VoltageControlInit(&vc);
+/*End code section*/"
+            input_terminals = "real in_v_ref;real in_w_ref;real in_vc;uint in_enabled;real in_v_rede;real in_is_tied;"
+            input_terminals_dimensions = "1;1;1;1;inherit;inherit"
+            input_terminals_feedthrough = "True;True;True;True;True;True"
+            input_terminals_show_labels = "False;False;False;False;False;False"
+            output_fnc = "/*Begin code section*/
+if(in_enabled && !in_is_tied){
+    // Geracao de referencia
+    generateReference(&vc, in_v_ref, in_w_ref, &v_ref_wave, &ug_theta);
+    // Execucao do controle de tensao
+    executeVoltageControl(&vc, v_ref_wave, in_vc, &u);
+    // Atribui os valores de saída do bloco
+    out_u = u;
+    out_v_ref_wave = v_ref_wave;
+}else{
+    out_u = 0;
+    out_v_ref_wave = 0;
+}
+/*End code section*/"
+            output_terminals = "real out_u;real out_v_ref_wave;"
+            output_terminals_dimensions = "1;1"
+            output_terminals_feedthrough = "True;True"
+            output_terminals_show_labels = "False;False"
+        }
+        [
+            position = 9744, 6496
+            size = 112, 472
+        ]
+
+        component "core/C function" fr_droop {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+// Constant definitions
+const float V0 = 220;
+const float W0 = 376.9911;
+const float DELTA_V = 11;
+const float DELTA_W = 2*3.141592;
+const float TWOPI = 6.2831;
+
+// Structs redefinition
+struct Droop
+{
+  float p_max;
+  float q_max;
+  float p_ref;
+  float q_ref;
+  float v0;
+  float w0;
+  float m;
+  float n;
+  float last_pf_meas;
+  float last_qf_meas;
+};
+
+struct GridSyncController
+{
+  float w0;
+  float w_last_error;
+  float w_last_output;
+  float u0;
+  float u_last_error;
+  float u_last_output;
+};
+
+struct SRFpll
+{
+  float omega0;
+  float last_vq;
+  float last_pi_output;
+  float last_sum;
+  float last_theta;
+};
+
+// Structs declaration
+struct Droop droop;
+struct GridSyncController gsc;
+struct SRFpll grid_srf;
+struct SRFpll ugrid_srf;
+
+// Droop Controller variables
+float p = 0;
+float q = 0;
+float v_ref = 0;
+float w_ref = 0;
+
+// Grid Synchronization Controller variables
+// For phase sync
+float w_sum = 0;
+float w_sync = 0;
+float phase_error = 0;
+float grid_theta = 0;
+float ugrid_theta = 0;
+// For voltage sync
+float voltage_sum = 0;
+float vrms_sync = 0;
+float voltage_error = 0;
+float grid_voltage = 0;
+float ug_voltage = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_DP"
+            init_fnc = "/*Begin code section*/
+// Variables initialization
+// For droop controller
+p = 0;
+q = 0;
+v_ref = 0;
+w_ref = 0;
+// For phase sync
+w_sum = 0;
+w_sync = 0;
+phase_error = 0;
+grid_theta = 0;
+ugrid_theta = 0;
+// For voltage sync
+voltage_sum = 0;
+vrms_sync = 0;
+voltage_error = 0;
+grid_voltage = 0;
+ug_voltage = 0;
+// Controllers initialization
+DroopControlInit(&droop, 15000, 7500, V0, W0, DELTA_V, DELTA_W);
+GridSyncControllerInit(&gsc);
+SRFpllInit(&grid_srf, W0);
+SRFpllInit(&ugrid_srf, W0);
+/*End code section*/"
+            input_terminals = "real in_v_alpha;real in_v_beta;real in_grid_v_alpha;real in_grid_v_beta;real in_i_alpha;real in_i_beta;real in_p0;real in_q0;real in_grid_v_rms;real in_ugrid_v_rms;int in_transition2tied;uint in_enabled;uint in_is_tied;"
+            input_terminals_dimensions = "1;1;1;1;1;1;1;1;1;1;1;1;inherit"
+            input_terminals_feedthrough = "True;True;True;True;True;True;True;True;True;True;True;True;True"
+            input_terminals_show_labels = "False;False;False;False;False;False;False;False;False;False;False;False;False"
+            output_fnc = "/*Begin code section*/
+if(in_enabled && !in_is_tied){
+    // Execute control routines
+    //setDroopPQ(&droop, in_p0, in_q0);
+    calculateDroopPQ(&droop, in_v_alpha, in_v_beta, in_i_alpha, in_i_beta, &p, &q);
+    executeDroopControl(&droop, &v_ref, &w_ref);
+    w_sum = w_ref;
+    voltage_sum = v_ref;
+    
+    if(in_transition2tied){
+        // For phase synchronization
+        // get theta from grid
+        executeSRFpll(&grid_srf, in_grid_v_alpha, in_grid_v_beta, &grid_theta);
+        // get theta from microgrid
+        executeSRFpll(&ugrid_srf, in_v_alpha, in_v_beta, &ugrid_theta);
+        // execute phase sync controller
+        executeThetaSyncControl(&gsc, grid_theta, ugrid_theta, &w_sync, &phase_error);   
+        // For voltage synchronization
+        // get voltage from grid
+        grid_voltage = in_grid_v_rms;
+        // get voltage from microgrid
+        ug_voltage = in_ugrid_v_rms;
+        //execute voltage sync controller
+        executeVoltageSyncControl(&gsc, grid_voltage, ug_voltage, &vrms_sync, &voltage_error);
+        vrms_sync = -vrms_sync;
+        // sum outputs from sync routines
+        w_sum = w_ref + w_sync;
+        voltage_sum = v_ref + vrms_sync;
+    }
+    // Set output values
+    out_v_ref = voltage_sum;
+    out_w_ref = w_sum;
+    out_p = p;
+    out_q = q;
+    out_phase_error = phase_error;
+    out_voltage_error = voltage_error;
+    out_w_sync = w_sync;
+    out_vrms_sync = vrms_sync;
+    out_theta_grid = grid_theta;
+    out_utheta_grid = ugrid_theta; 
+    out_grid_voltage = grid_voltage;
+    out_ugrid_voltage = ug_voltage;
+}else{
+    // Set output values
+    out_v_ref = 0;
+    out_w_ref = 0;
+    out_p = 0;
+    out_q = 0;
+    out_phase_error = 0;
+    out_voltage_error = 0;
+    out_w_sync = 0;
+    out_vrms_sync = 0;
+    out_grid_voltage = 0;
+    out_ugrid_voltage = 0;
+}
+/*End code section*/"
+            output_terminals = "real out_v_ref;real out_w_ref;real out_p;real out_q;real out_phase_error;real out_voltage_error;real out_w_sync;real out_vrms_sync;real out_theta_grid;real out_utheta_grid;real out_grid_voltage;real out_ugrid_voltage;"
+            output_terminals_dimensions = "1;1;1;1;1;1;1;1;1;1;inherit;inherit"
+            output_terminals_feedthrough = "True;True;True;True;True;True;True;True;True;True;True;True"
+            output_terminals_show_labels = "False;False;False;False;False;False;False;False;False;False;False;False"
+        }
+        [
+            position = 9080, 6768
+            size = 104, 1016
+        ]
+
+        component "core/Rate Transition" "Rate Transition9" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6288
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition13" {
+            execution_rate = "TS_CV"
+        }
+        [
+            position = 9616, 6296
+            size = 32, 32
+        ]
+
+        component "core/Inductor" Lload {
+            inductance = "3e-3"
+            signal_access = "Inherit"
+        }
+        [
+            position = 9112, 8064
+            rotation = left
+        ]
+
+        component "core/Resistor" Rload {
+            resistance = "4"
+        }
+        [
+            position = 9112, 7976
+            rotation = left
+        ]
+
+        component "core/Current Measurement" i_aux {
+            execution_rate = "TS_CI"
+            feed_forward = "true"
+            sig_output = "True"
+            signal_access = "Inherit"
+        }
+        [
+            position = 9448, 7832
+            rotation = down
+            size = 64, 32
+        ]
+
+        component Subsystem Grid {
+            layout = dynamic
+            component "core/Voltage Source" Vgsource {
+                init_frequency = "60"
+                init_rms_value = "220"
+                init_source_nature = "Sine"
+            }
+            [
+                position = 8224, 8288
+                rotation = right
+            ]
+
+            component "core/Inductor" L1 {
+                inductance = "22e-6"
+                signal_access = "Inherit"
+            }
+            [
+                position = 8120, 8128
+            ]
+
+            component "core/Resistor" R1 {
+                resistance = "0.0642"
+            }
+            [
+                position = 8224, 8176
+                rotation = right
+            ]
+
+            port P1 {
+                position = left:1
+                kind = pe
+            }
+            [
+                position = 8000, 8128
+            ]
+
+            port P2 {
+                position = left:2
+                kind = pe
+            }
+            [
+                position = 8000, 8384
+            ]
+
+            comment Comment1 START <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head><meta name="qrichtext" content="1" /><style type="text/css">p, li { white-space: pre-wrap; }</style></head><body style=" font-family:'Arial'; font-size:12pt; font-weight:400; font-style:normal;"><p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">220 V single-phase grid</p></body></html> ENDCOMMENT 
+            [
+                position = 8048, 8448
+            ]
+
+            connect P2 Vgsource.n_node as Connection4235
+            [
+                breakpoints = 8080, 8384
+            ]
+            connect L1.p_node P1 as Connection4237
+            connect L1.n_node R1.p_node as Connection4238
+            connect Vgsource.p_node R1.n_node as Connection4239
+        }
+        [
+            position = 9608, 7984
+            size = 80, 344
+        ]
+
+        component "core/Voltage Measurement" v_aux {
+            execution_rate = "TS_CI"
+            feed_forward = "true"
+            sig_output = "True"
+            signal_access = "Inherit"
+        }
+        [
+            position = 9384, 7976
+            rotation = right
+            size = 64, 32
+        ]
+
+        component "core/Single Pole Single Throw Contactor" S4 {
+            ctrl_src = "Model"
+            signal_access = "Inherit"
+        }
+        [
+            position = 9288, 7832
+            size = 64, 32
+        ]
+
+        component "core/Probe" grid_i {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 7232, 8352
+            rotation = down
+        ]
+
+        component "core/Core Marker" "Core Marker1" {
+        }
+        [
+            position = 8976, 7776
+        ]
+
+        component "core/C function" grid_sogi {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+struct SOGIqsg {
+  float w0;
+  float last_alpha_signal;
+  float last_beta_signal;
+  float last_w_meas;
+  float last_w;
+  float proportional_gain;
+  float fll_gain;
+};
+
+struct CircularBuffer{
+  float *buff;
+  int size;
+  int start;
+  int end;
+  int count;
+};
+
+ struct RMSCalculator {
+  struct CircularBuffer square_buffer;
+  int size;
+  float sum;
+};
+
+struct SOGIqsg v_sogi;
+float v_alpha = 0;
+float v_beta = 0;
+float v_freq = 60;
+
+struct RMSCalculator rms_calc;
+int size = 167; 
+float v_rms = 0;
+float peak_factor = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CI"
+            init_fnc = "/*Begin code section*/
+v_alpha = 0;
+v_beta = 0;
+v_freq = 60;
+size = 167; 
+v_rms = 0;
+peak_factor = 0;
+
+SOGIInit(&v_sogi, v_freq, 0.1, 0.02);
+RMSCalculatorInit(&rms_calc, size);
+/*End code section*/"
+            input_terminals = "real in_v;"
+            input_terminals_dimensions = "1"
+            input_terminals_feedthrough = "True"
+            input_terminals_show_labels = "False"
+            output_fnc = "/*Begin code section*/
+//Execução da Rotina do SOGI para a Tensão
+executeSOGI(&v_sogi, in_v, &v_alpha, &v_beta, &v_freq);
+//Execução do Calculo de Tensão RMS
+add2RMSCalculator(&rms_calc, in_v);
+calculateRMSvalue(&rms_calc, &v_rms);
+peak_factor = (v_rms <= 0) ? -1 : (1.0 / (v_rms * 1.4142));
+//Atribuição dos valores as saídas do bloco
+out_v_alpha = v_alpha;
+out_v_beta = v_beta;
+out_freq = v_freq;
+out_v_rms = v_rms;
+out_sen_wt = v_beta * peak_factor; 
+out_cos_wt = v_alpha * peak_factor;
+/*End code section*/"
+            output_terminals = "real out_v_alpha;real out_v_beta;real out_freq;real out_v_rms;real out_sen_wt;real out_cos_wt;"
+            output_terminals_dimensions = "1;1;1;inherit;inherit;inherit"
+            output_terminals_feedthrough = "True;True;True;True;True;True"
+            output_terminals_show_labels = "False;False;False;False;False;False"
+        }
+        [
+            position = 7472, 8152
+            size = 112, 648
+        ]
+
+        component "core/Probe" grid_v {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 7232, 8224
+            rotation = down
+        ]
+
+        component "core/HIL Flags Status" "HIL Flags Status1" {
+        }
+        [
+            position = 7160, 7624
+        ]
+
+        component "core/Digital Probe" debug_spc {
+        }
+        [
+            position = 7288, 7544
+        ]
+
+        component "core/Digital Probe" debug_mch {
+        }
+        [
+            position = 7288, 7624
+        ]
+
+        component "core/Digital Probe" debug_dtv {
+        }
+        [
+            position = 7288, 7704
+        ]
+
+        component "core/C function" microgrid_controller {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+int ug_tie_resp = 0;
+int ug_untie_resp = 0;
+int gform_tie_resp = 0;
+int gform_untie_resp = 0;
+int gfollow_tie_resp = 0;
+int gfollow_untie_resp = 0;
+
+struct ug_CircularBuffer
+{
+  float *buff;
+  int size;
+  int start;
+  int end;
+  int count;
+};
+
+struct uGridController
+{
+  // status of the microgrid according to const defined above
+  int ugrid_status;
+  // buffer to store last phase errors
+  struct ug_CircularBuffer delta_theta;
+  float delta_theta_sum;
+  // buffer to store last voltage errors
+  struct ug_CircularBuffer delta_v;
+  float delta_v_sum;
+  // factor to calculate average, this variable allow to execute only one division 
+  float buff_size_factor;
+};
+
+struct uGridController ugc;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_UGC"
+            init_fnc = "/*Begin code section*/
+uGridControllerInit(&ugc, 5000);
+/*End code section*/"
+            input_terminals = "int in_req2tie;int in_req2untie;int in_req2tie_gform;int in_req2untie_gform;int in_req2tie_gfollow;int in_req2untie_gfollow;real in_phase_error;real in_voltage_error;"
+            input_terminals_dimensions = "1;1;1;1;1;1;1;1"
+            input_terminals_feedthrough = "True;True;True;True;True;True;True;True"
+            input_terminals_show_labels = "False;False;False;False;False;False;False;False"
+            output_fnc = "/*Begin code section*/
+// Scada inputs processing
+
+// For Microgrid itself
+if(in_req2tie){
+    setTransition2Tied(&ugc);
+    out_transition2tied = 1;
+}
+
+if(in_req2untie){
+    setTransition2Islanded(&ugc);
+}
+
+// For Grid Forming inverter
+if(in_req2tie_gform){
+    out_gform_enable = 1;
+}
+
+if(in_req2untie_gform){
+    out_gform_enable = 0;
+}
+
+// For Grid Following inverter
+if(in_req2tie_gfollow){
+    out_gfollow_enable = 1;
+}
+
+if(in_req2untie_gfollow){
+    out_gfollow_enable = 0;
+}
+
+//Transition: islanded 2 tied handling
+if(tieHandler(&ugc, in_phase_error, in_voltage_error)){
+    out_transition2tied = 0;
+    out_tie2grid = 1;
+}
+
+//Transition: tied 2 islanded handling
+if(untieHandler(&ugc)){
+    out_transition2untied = 0;
+    out_tie2grid = 0;
+}
+/*End code section*/"
+            output_terminals = "int out_transition2tied;int out_transition2untied;int out_tie2grid;int out_gform_enable;int out_gfollow_enable;"
+            output_terminals_dimensions = "1;1;1;1;1"
+            output_terminals_feedthrough = "True;True;True;True;True"
+            output_terminals_show_labels = "False;False;False;False;False"
+        }
+        [
+            position = 10656, 8088
+            size = 112, 704
+        ]
+
+        component "core/SCADA Input" fr_pref {
+            execution_rate = "TS_UGC"
+            max = "15000"
+            min = "0"
+            unit = ""
+        }
+        [
+            position = 8776, 6768
+        ]
+
+        component "core/SCADA Input" fr_qref {
+            execution_rate = "TS_UGC"
+            max = "5000"
+            min = "-5000"
+            unit = ""
+        }
+        [
+            position = 8776, 6848
+        ]
+
+        component "core/SCADA Input" sr_pref {
+            execution_rate = "TS_UGC"
+            max = "15000"
+            min = "0"
+            unit = ""
+        }
+        [
+            position = 8776, 9184
+        ]
+
+        component "core/SCADA Input" sr_qref {
+            execution_rate = "TS_UGC"
+            max = "5000"
+            min = "-5000"
+            unit = ""
+        }
+        [
+            position = 8776, 9240
+        ]
+
+        component "core/Single Phase TLM Core Coupling" "Core Coupling 1" {
+            inductance = "0.3333333e-3"
+        }
+        [
+            position = 9128, 8456
+            size = 12, 256
+        ]
+
+        component "core/Rate Transition" "Rate Transition20" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 8344, 6888
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition22" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 10248, 6536
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition27" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8928, 9184
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition28" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8928, 9240
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition29" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 8480, 8248
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition30" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 8480, 7736
+            size = 32, 32
+        ]
+
+        component "core/Voltage Measurement" vpoi2 {
+            execution_rate = "TS_CI"
+            feed_forward = "true"
+            sig_output = "True"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8976, 8464
+            rotation = right
+            size = 64, 32
+        ]
+
+        component "core/Probe" sr_il1 {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 8176, 9200
+            rotation = down
+        ]
+
+        component "core/Single Pole Single Throw Contactor" S1 {
+            ctrl_src = "Model"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8920, 7832
+            size = 64, 32
+        ]
+
+        component "core/Single Pole Single Throw Contactor" S3 {
+        }
+        [
+            position = 9112, 7888
+            rotation = left
+            size = 64, 32
+        ]
+
+        component "core/Single Pole Single Throw Contactor" S5 {
+            ctrl_src = "Model"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8872, 8360
+            size = 64, 32
+        ]
+
+        component "core/Probe" fr_vpoi {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8152, 6528
+            rotation = down
+        ]
+
+        component "core/Core Marker" "Core Marker2" {
+            marker_id = "id1"
+        }
+        [
+            position = 8976, 8312
+        ]
+
+        component "core/Probe" fr_vbeta {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8688, 6416
+        ]
+
+        component "core/Probe" fr_freq {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "frequency"
+        }
+        [
+            position = 8688, 6496
+        ]
+
+        component "core/Probe" fr_ialpha {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 8688, 6576
+        ]
+
+        component "core/Probe" fr_ibeta {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 8688, 6656
+        ]
+
+        component "core/Probe" fr_vrms {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8688, 6736
+        ]
+
+        component "core/Probe" fr_sin {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8688, 6816
+        ]
+
+        component "core/Probe" fr_cos {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8688, 6896
+        ]
+
+        component "core/Rate Transition" "Rate Transition41" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6368
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition42" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6448
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition43" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6528
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition44" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6608
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition45" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6688
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition46" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6768
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition47" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6848
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition48" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 6928
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition49" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 7008
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition50" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 7088
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition51" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 7168
+            size = 32, 32
+        ]
+
+        component "core/Probe" fr_vref {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 9320, 6320
+        ]
+
+        component "core/Probe" fr_wref {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "angular speed"
+        }
+        [
+            position = 9320, 6400
+        ]
+
+        component "core/Probe" fr_p {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "active power"
+        }
+        [
+            position = 9320, 6496
+        ]
+
+        component "core/Probe" fr_q {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "reactive power"
+        }
+        [
+            position = 9320, 6576
+        ]
+
+        component "core/Probe" fr_phase_error {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "angle"
+        }
+        [
+            position = 9320, 6672
+        ]
+
+        component "core/Probe" fr_voltage_error {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 9320, 6752
+        ]
+
+        component "core/Probe" fr_wsync {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "angular speed"
+        }
+        [
+            position = 9320, 6848
+        ]
+
+        component "core/Probe" fr_vsync {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 9320, 6928
+        ]
+
+        component "core/Probe" fr_grid_theta {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "angle"
+        }
+        [
+            position = 9320, 7024
+        ]
+
+        component "core/Probe" fr_microgrid_theta {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "angle"
+        }
+        [
+            position = 9320, 7104
+        ]
+
+        component "core/Probe" fr_grid_voltage {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 9320, 7200
+        ]
+
+        component "core/Probe" fr_microgrid_voltage {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 9320, 7280
+        ]
+
+        component "core/Rate Transition" "Rate Transition52" {
+            execution_rate = "TS_CV"
+        }
+        [
+            position = 9616, 6376
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition53" {
+            execution_rate = "TS_CV"
+        }
+        [
+            position = 9616, 6456
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition54" {
+            execution_rate = "TS_CV"
+        }
+        [
+            position = 9616, 6536
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition55" {
+            execution_rate = "TS_CV"
+        }
+        [
+            position = 9616, 6616
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition56" {
+            execution_rate = "TS_CV"
+        }
+        [
+            position = 9616, 6696
+            size = 32, 32
+        ]
+
+        component "core/Probe" fr_v_action {
+            execution_rate = "TS_CV"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 9984, 6312
+        ]
+
+        component "core/Probe" fr_vref_signal {
+            execution_rate = "TS_CV"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 9984, 6744
+        ]
+
+        component "core/Probe" fr_pwma1 {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10640, 6328
+        ]
+
+        component "core/Probe" fr_pwmb1 {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10640, 6680
+        ]
+
+        component "core/Probe" sr_valpha {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8688, 9000
+        ]
+
+        component "core/Probe" sr_vbeta {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8688, 9080
+        ]
+
+        component "core/Probe" sr_freq {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "frequency"
+        }
+        [
+            position = 8688, 9160
+        ]
+
+        component "core/Probe" sr_ialpha {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 8688, 9240
+        ]
+
+        component "core/Probe" sr_ibeta {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 8688, 9320
+        ]
+
+        component "core/Probe" sr_vrms {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 8688, 9400
+        ]
+
+        component "core/Probe" sr_sin {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8688, 9480
+        ]
+
+        component "core/Probe" sr_cos {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 8688, 9560
+        ]
+
+        component "core/Probe" sr_id {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 9312, 8984
+        ]
+
+        component "core/Probe" sr_iq {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 9312, 9096
+        ]
+
+        component "core/Probe" sr_p {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "active power"
+        }
+        [
+            position = 9312, 9224
+        ]
+
+        component "core/Probe" sr_q {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "reactive power"
+        }
+        [
+            position = 9312, 9336
+        ]
+
+        component "core/Rate Transition" "Rate Transition57" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 9568, 8952
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition58" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 9568, 9016
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition62" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 9568, 9304
+            size = 32, 32
+        ]
+
+        component "core/Probe" sr_pwma {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 9944, 8984
+        ]
+
+        component "core/Probe" sr_pwmb {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 9944, 9160
+        ]
+
+        component "core/Probe" sr_iref_signal {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 9944, 9336
+        ]
+
+        component "core/Probe" grid_valpha {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 7712, 7880
+        ]
+
+        component "core/Probe" grid_vbeta {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 7712, 8008
+        ]
+
+        component "core/Probe" grid_freq {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "frequency"
+        }
+        [
+            position = 7712, 8120
+        ]
+
+        component "core/Probe" grid_vrms {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "voltage"
+        }
+        [
+            position = 7712, 8248
+        ]
+
+        component "core/Probe" grid_sin {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 7712, 8360
+        ]
+
+        component "core/Probe" grid_cos {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 7712, 8488
+        ]
+
+        component "core/SCADA Input" mgcc_req2tie {
+            execution_rate = "TS_UGC"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 10392, 7784
+        ]
+
+        component "core/SCADA Input" mgcc_req2island {
+            execution_rate = "TS_UGC"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 10392, 7864
+        ]
+
+        component "core/SCADA Input" mgcc_req2tieFR {
+            execution_rate = "TS_UGC"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 10392, 7960
+        ]
+
+        component "core/SCADA Input" mgcc_req2untieFR {
+            execution_rate = "TS_UGC"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 10392, 8040
+        ]
+
+        component "core/Rate Transition" "Rate Transition63" {
+            execution_rate = "TS_UGC"
+        }
+        [
+            position = 10536, 8312
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition64" {
+            execution_rate = "TS_UGC"
+        }
+        [
+            position = 10536, 8392
+            size = 32, 32
+        ]
+
+        component "core/SCADA Input" mgcc_req2tieSR {
+            execution_rate = "TS_UGC"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 10392, 8136
+        ]
+
+        component "core/SCADA Input" mgcc_req2untieSR {
+            execution_rate = "TS_UGC"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 10392, 8216
+        ]
+
+        component "core/Probe" mgcc_tran2tied {
+            execution_rate = "TS_UGC"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10904, 7800
+        ]
+
+        component "core/Probe" mgcc_tran2islanded {
+            execution_rate = "TS_UGC"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10904, 7960
+        ]
+
+        component "core/Digital Probe" sr_off {
+            execution_rate = "TS_UGC"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10904, 8352
+        ]
+
+        component "core/Logical operator" not3 {
+            operator = "NOT"
+        }
+        [
+            position = 10784, 8352
+        ]
+
+        component "core/Digital Probe" sr_on {
+            execution_rate = "TS_UGC"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10904, 8408
+        ]
+
+        component "core/Digital Probe" fr_off {
+            execution_rate = "TS_UGC"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10904, 8192
+        ]
+
+        component "core/Logical operator" not4 {
+            operator = "NOT"
+        }
+        [
+            position = 10784, 8192
+        ]
+
+        component "core/Digital Probe" fr_on {
+            execution_rate = "TS_UGC"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10904, 8248
+        ]
+
+        component "core/Digital Probe" microgrid_islanded {
+            execution_rate = "TS_UGC"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10904, 8032
+        ]
+
+        component "core/Logical operator" not5 {
+            operator = "NOT"
+        }
+        [
+            position = 10784, 8032
+        ]
+
+        component "core/Digital Probe" microgrid_tied {
+            execution_rate = "TS_UGC"
+            signal_access = "Inherit"
+        }
+        [
+            position = 10904, 8088
+        ]
+
+        component "core/Rate Transition" "Rate Transition65" {
+            execution_rate = "TS_DP"
+        }
+        [
+            position = 8960, 7248
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition66" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 10248, 6648
+            size = 32, 32
+        ]
+
+        component "core/C function" fr_pq_control {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+struct PowerControl {
+  float p_ref;
+  float q_ref;
+  float last_p_error;
+  float last_i_direct;
+  float last_q_error;
+  float last_i_quad;
+  float last_pf_meas;
+  float last_qf_meas;
+  float last_p_meas;
+  float last_q_meas;
+};
+
+struct PowerControl pc;
+    
+float p_ref = 0;
+float q_ref = 0;
+float id = 0;
+float iq = 0;
+float p = 0;
+float q = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CP"
+            init_fnc = "/*Begin code section*/
+p_ref = 0;
+q_ref = 0;
+id = 0;
+iq = 0;
+p = 0;
+q = 0;
+
+PowerControlInit(&pc, 0, 0);
+/*End code section*/"
+            input_terminals = "real in_v_alpha;real in_v_beta;real in_i_alpha;real in_i_beta;real in_p_ref;real in_q_ref;uint in_enabled;uint in_is_tied;"
+            input_terminals_dimensions = "1;1;1;1;1;1;1;1"
+            input_terminals_feedthrough = "True;True;True;True;True;True;True;True"
+            input_terminals_show_labels = "False;False;False;False;False;False;False;False"
+            output_fnc = "/*Begin code section*/
+if(in_enabled == 1 && in_is_tied == 1){
+    //Entrada de potencia ativa em rampa
+    if(in_p_ref > p_ref) p_ref += 1;
+    if(in_p_ref < p_ref) p_ref -= 1;
+    //Entrada de potencia reativa em rampa
+    if(in_q_ref > q_ref) q_ref += 1;
+    if(in_q_ref < q_ref) q_ref -= 1;
+    //Define PQ conforme input do HIL SCADA
+    setPQ(&pc, p_ref, q_ref);
+    //Calcula PQ baseado nos sinais do PLL
+    calculatePQ(&pc, in_v_alpha, in_v_beta, in_i_alpha, in_i_beta, &p, &q);
+    //Executa a rotina de controle de potência
+    executePQControl(&pc, &id, &iq);
+    //Atribuiu os valores de saída do bloco
+    out_p = p;
+    out_q = q;
+    out_id = id;
+    out_iq = iq;
+}else{
+    out_p = 0;
+    out_q = 0;
+    out_id = 0;
+    out_iq = 0;
+}
+/*End code section*/"
+            output_terminals = "real out_id;real out_iq;real out_p;real out_q;"
+            output_terminals_dimensions = "1;1;1;1"
+            output_terminals_feedthrough = "True;True;True;True"
+            output_terminals_show_labels = "False;False;False;False"
+        }
+        [
+            position = 9080, 5968
+            size = 104, 448
+        ]
+
+        component "core/Rate Transition" "Rate Transition67" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8960, 5776
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition68" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8960, 5824
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition69" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8960, 5888
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition70" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8960, 5936
+            size = 32, 32
+        ]
+
+        component "core/C function" fr_res_i_control {
+            add_src_path = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            add_src_path_full = "C:\projetos\tcc\src\grid_forming.h;C:\projetos\tcc\src\grid_following.h;C:\projetos\tcc\src\pll.h;C:\projetos\tcc\src\microgrid.h"
+            arb_defs = "/*Begin code section*/
+struct CurrentControl{
+  float last_u;
+  float sec_last_u;
+  float last_error;
+  float sec_last_error;
+};
+
+struct CurrentControl cc;
+    
+float u = 0;
+float ref = 0;
+/*End code section*/"
+            arm_a9_file_path = "C:/projetos/tcc/lib/libmicrogrid.a"
+            arm_a9_file_path_full = "C:/projetos/tcc/lib/libmicrogrid.a"
+            convert_to_relative_a = "False"
+            convert_to_relative_dll = "False"
+            convert_to_relative_src = "False"
+            execution_rate = "TS_CI"
+            init_fnc = "/*Begin code section*/
+u = 0;
+ref = 0;
+CurrentControlInit(&cc);
+/*End code section*/"
+            input_terminals = "real in_id;real in_iq;real in_sin_wt;real in_cos_wt;real in_i_meas;uint in_enabled;uint in_is_tied;"
+            input_terminals_dimensions = "1;1;1;1;1;1;1"
+            input_terminals_feedthrough = "True;True;True;True;True;True;True"
+            input_terminals_show_labels = "False;False;False;False;False;False;False"
+            output_fnc = "/*Begin code section*/
+if(in_enabled == 1 && in_is_tied == 1){
+    //Executa a rotina de controle de corrente
+    executeCurrentControl(&cc, in_id, in_iq, in_sin_wt, in_cos_wt, in_i_meas, &u, &ref);
+    //Atribuiu os valores de saída do bloco
+    out_ua = u;
+    out_ub = -u;
+    out_ref = ref;
+}else{
+    out_ua = 0;
+    out_ub = 0;
+    out_ref = 0;
+}
+/*End code section*/"
+            output_terminals = "real out_ua;real out_ub;real out_ref;"
+            output_terminals_dimensions = "1;1;1"
+            output_terminals_feedthrough = "True;True;True"
+            output_terminals_show_labels = "False;False;False"
+        }
+        [
+            position = 9744, 5944
+            size = 112, 400
+        ]
+
+        component "core/Rate Transition" "Rate Transition71" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8960, 6112
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition72" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8960, 6000
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition73" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8960, 6048
+            size = 32, 32
+        ]
+
+        component "core/Probe" sr_id1 {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 9320, 5792
+        ]
+
+        component "core/Probe" sr_iq1 {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 9320, 5936
+        ]
+
+        component "core/Probe" fr_p_tied {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "active power"
+        }
+        [
+            position = 9320, 6064
+        ]
+
+        component "core/Probe" fr_q_tied {
+            execution_rate = "TS_DP"
+            signal_access = "Inherit"
+            signal_type = "reactive power"
+        }
+        [
+            position = 9320, 6208
+        ]
+
+        component "core/Rate Transition" "Rate Transition74" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 9616, 5776
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition75" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 9616, 5832
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition76" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 9616, 6056
+            size = 32, 32
+        ]
+
+        component "core/Probe" fr_pwma2 {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 9984, 5800
+        ]
+
+        component "core/Probe" fr_pwmb2 {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+        }
+        [
+            position = 9984, 5976
+        ]
+
+        component "core/Probe" fr_iref_signal {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 9984, 6152
+        ]
+
+        component "core/Rate Transition" "Rate Transition77" {
+            execution_rate = "TS_CP"
+        }
+        [
+            position = 8960, 6160
+            size = 32, 32
+        ]
+
+        component "core/Rate Transition" "Rate Transition78" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 9616, 6112
+            size = 32, 32
+        ]
+
+        component "core/Multiport signal switch" "Multiport signal switch1" {
+        }
+        [
+            position = 8480, 7648
+        ]
+
+        component "core/Multiport signal switch" "Multiport signal switch2" {
+        }
+        [
+            position = 8480, 7520
+        ]
+
+        component "core/Probe" sr_vc {
+            execution_rate = "TS_CI"
+            signal_access = "Inherit"
+            signal_type = "current"
+        }
+        [
+            position = 8176, 9320
+            rotation = down
+        ]
+
+        component "core/Sum" Sum1 {
+        }
+        [
+            position = 8288, 7600
+        ]
+
+        component "core/Constant" Constant1 {
+        }
+        [
+            position = 7872, 7648
+        ]
+
+        component "core/Rate Transition" "Rate Transition80" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 8024, 7560
+            size = 32, 32
+        ]
+
+        component "core/Sum" Sum2 {
+        }
+        [
+            position = 8144, 6384
+        ]
+
+        component "core/Constant" Constant3 {
+        }
+        [
+            position = 7872, 6440
+        ]
+
+        component "core/Rate Transition" "Rate Transition81" {
+            execution_rate = "TS_CI"
+        }
+        [
+            position = 8024, 6376
+            size = 32, 32
+        ]
+
+        component "core/Multiport signal switch" "Multiport signal switch3" {
+        }
+        [
+            position = 8328, 6400
+        ]
+
+        tag Goto33 {
+            value = "sr_il1"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8840, 8456
+            size = 60, 20
+        ]
+
+        tag Goto35 {
+            value = "sr_vc"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8840, 8504
+            size = 60, 20
+        ]
+
+        tag From39 {
+            value = "sr_pwma"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8328, 8192
+            size = 132, 20
+        ]
+
+        tag From40 {
+            value = "sr_pwmb"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8328, 8144
+            size = 132, 20
+        ]
+
+        tag From42 {
+            value = "sr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8328, 8248
+            size = 131, 20
+        ]
+
+        tag From43 {
+            value = "sr_vpoi"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8192, 8944
+            size = 60, 20
+        ]
+
+        tag From44 {
+            value = "sr_il2"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8192, 9552
+            size = 60, 20
+        ]
+
+        tag From6 {
+            value = "fr_vc"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8224, 6280
+            size = 60, 20
+        ]
+
+        tag Goto6 {
+            value = "fr_valpha"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 6304
+            size = 124, 20
+        ]
+
+        tag From10 {
+            value = "fr_il1"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8224, 6632
+            size = 60, 20
+        ]
+
+        tag From16 {
+            value = "fr_v_action"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 10112, 6296
+            size = 100, 20
+        ]
+
+        tag Goto1 {
+            value = "fr_vpoi"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9040, 7976
+            size = 60, 20
+        ]
+
+        tag Goto2 {
+            value = "fr_il1"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8840, 7960
+            size = 60, 20
+        ]
+
+        tag Goto4 {
+            value = "fr_vc"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8840, 8024
+            size = 60, 20
+        ]
+
+        tag From17 {
+            value = "fr_pwma1"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8184, 7648
+            size = 124, 20
+        ]
+
+        tag From18 {
+            value = "fr_pwmb2"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8184, 7560
+            size = 124, 20
+        ]
+
+        tag From29 {
+            value = "fr_valpha"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6288
+            size = 100, 20
+        ]
+
+        tag From33 {
+            value = "fr_vref"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6296
+            size = 92, 20
+        ]
+
+        tag Goto22 {
+            value = "grid_v"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9488, 7976
+            size = 60, 20
+        ]
+
+        tag Goto23 {
+            value = "grid_i"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9488, 7880
+            size = 60, 20
+        ]
+
+        tag From38 {
+            value = "grid_i"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 7232, 8280
+            size = 60, 20
+        ]
+
+        tag From47 {
+            value = "grid_v"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 7232, 8152
+            size = 60, 20
+        ]
+
+        tag From51 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9192, 7736
+            size = 130, 20
+        ]
+
+        tag From52 {
+            value = "fr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8200, 6888
+            size = 116, 20
+        ]
+
+        tag From55 {
+            value = "fr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8184, 7736
+            size = 123, 20
+        ]
+
+        tag Goto61 {
+            value = "sr_vpoi"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9040, 8464
+            size = 60, 20
+        ]
+
+        tag Goto66 {
+            value = "sr_il2"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8840, 8552
+            size = 60, 20
+        ]
+
+        tag From60 {
+            value = "sr_il1"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8192, 9248
+            size = 60, 20
+        ]
+
+        tag From65 {
+            value = "fr_vpoi"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8152, 6464
+            size = 60, 20
+        ]
+
+        tag Goto67 {
+            value = "fr_vbeta"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 6384
+            size = 124, 20
+        ]
+
+        tag Goto68 {
+            value = "fr_freq"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 6464
+            size = 124, 20
+        ]
+
+        tag Goto69 {
+            value = "fr_ialpha"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 6544
+            size = 124, 20
+        ]
+
+        tag Goto70 {
+            value = "fr_ibeta"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 6624
+            size = 124, 20
+        ]
+
+        tag Goto71 {
+            value = "fr_vrms"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 6704
+            size = 124, 20
+        ]
+
+        tag Goto72 {
+            value = "fr_sin"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 6784
+            size = 124, 20
+        ]
+
+        tag Goto73 {
+            value = "fr_cos"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 6864
+            size = 124, 20
+        ]
+
+        tag From68 {
+            value = "fr_vbeta"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6368
+            size = 100, 20
+        ]
+
+        tag From69 {
+            value = "grid_valpha"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6448
+            size = 100, 20
+        ]
+
+        tag From70 {
+            value = "grid_vbeta"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6528
+            size = 100, 20
+        ]
+
+        tag From71 {
+            value = "fr_ialpha"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6608
+            size = 100, 20
+        ]
+
+        tag From72 {
+            value = "fr_ibeta"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6688
+            size = 100, 20
+        ]
+
+        tag From75 {
+            value = "fr_vrms"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6928
+            size = 100, 20
+        ]
+
+        tag From76 {
+            value = "grid_vrms"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 7008
+            size = 100, 20
+        ]
+
+        tag From77 {
+            value = "mgcc_tran2tied"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 7088
+            size = 100, 20
+        ]
+
+        tag From78 {
+            value = "fr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 7168
+            size = 100, 20
+        ]
+
+        tag Goto74 {
+            value = "fr_vref"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6288
+            size = 124, 20
+        ]
+
+        tag Goto75 {
+            value = "fr_wref"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6368
+            size = 124, 20
+        ]
+
+        tag Goto76 {
+            value = "fr_p"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6464
+            size = 124, 20
+        ]
+
+        tag Goto77 {
+            value = "fr_q"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6544
+            size = 124, 20
+        ]
+
+        tag Goto78 {
+            value = "fr_phase_error"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6640
+            size = 124, 20
+        ]
+
+        tag Goto79 {
+            value = "fr_voltage_error"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6720
+            size = 124, 20
+        ]
+
+        tag Goto80 {
+            value = "fr_wsync"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6816
+            size = 124, 20
+        ]
+
+        tag Goto81 {
+            value = "fr_vsync"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6896
+            size = 124, 20
+        ]
+
+        tag Goto82 {
+            value = "fr_grid_theta"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6992
+            size = 124, 20
+        ]
+
+        tag Goto83 {
+            value = "fr_microgrid_theta"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 7072
+            size = 124, 20
+        ]
+
+        tag Goto84 {
+            value = "fr_grid_voltage"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 7168
+            size = 124, 20
+        ]
+
+        tag Goto85 {
+            value = "fr_microgrid_voltage"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 7248
+            size = 124, 20
+        ]
+
+        tag From79 {
+            value = "fr_wref"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6376
+            size = 92, 20
+        ]
+
+        tag From80 {
+            value = "fr_vc"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6456
+            size = 92, 20
+        ]
+
+        tag From81 {
+            value = "fr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6536
+            size = 92, 20
+        ]
+
+        tag From82 {
+            value = "grid_v"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6616
+            size = 92, 20
+        ]
+
+        tag From83 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6696
+            size = 92, 20
+        ]
+
+        tag Goto86 {
+            value = "fr_v_action"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9904, 6280
+            size = 124, 20
+        ]
+
+        tag Goto87 {
+            value = "fr_vref_signal"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9904, 6712
+            size = 124, 20
+        ]
+
+        tag From84 {
+            value = "fr_il1"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 10112, 6408
+            size = 100, 20
+        ]
+
+        tag From85 {
+            value = "fr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 10112, 6536
+            size = 100, 20
+        ]
+
+        tag Goto88 {
+            value = "fr_pwma1"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 10560, 6296
+            size = 124, 20
+        ]
+
+        tag Goto89 {
+            value = "fr_pwmb1"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 10560, 6648
+            size = 124, 20
+        ]
+
+        tag Goto90 {
+            value = "sr_valpha"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 8968
+            size = 124, 20
+        ]
+
+        tag Goto91 {
+            value = "sr_vbeta"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 9048
+            size = 124, 20
+        ]
+
+        tag Goto92 {
+            value = "sr_freq"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 9128
+            size = 124, 20
+        ]
+
+        tag Goto93 {
+            value = "sr_ialpha"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 9208
+            size = 124, 20
+        ]
+
+        tag Goto94 {
+            value = "sr_ibeta"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 9288
+            size = 124, 20
+        ]
+
+        tag Goto95 {
+            value = "sr_vrms"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 9368
+            size = 124, 20
+        ]
+
+        tag Goto96 {
+            value = "sr_sin"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 9448
+            size = 124, 20
+        ]
+
+        tag Goto97 {
+            value = "sr_cos"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8608, 9528
+            size = 124, 20
+        ]
+
+        tag From86 {
+            value = "sr_valpha"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 8960
+            size = 100, 20
+        ]
+
+        tag From87 {
+            value = "sr_vbeta"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 9016
+            size = 100, 20
+        ]
+
+        tag From88 {
+            value = "sr_ialpha"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 9072
+            size = 100, 20
+        ]
+
+        tag From89 {
+            value = "sr_ibeta"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 9128
+            size = 100, 20
+        ]
+
+        tag From92 {
+            value = "sr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 9296
+            size = 100, 20
+        ]
+
+        tag Goto98 {
+            value = "sr_id"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9232, 8952
+            size = 124, 20
+        ]
+
+        tag Goto99 {
+            value = "sr_iq"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9232, 9064
+            size = 124, 20
+        ]
+
+        tag Goto100 {
+            value = "sr_p"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9232, 9192
+            size = 124, 20
+        ]
+
+        tag Goto101 {
+            value = "sr_q"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9232, 9304
+            size = 124, 20
+        ]
+
+        tag From93 {
+            value = "sr_id"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9440, 8952
+            size = 100, 20
+        ]
+
+        tag From94 {
+            value = "sr_iq"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9440, 9016
+            size = 100, 20
+        ]
+
+        tag From95 {
+            value = "sr_sin"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9440, 9096
+            size = 100, 20
+        ]
+
+        tag From96 {
+            value = "sr_cos"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9440, 9160
+            size = 100, 20
+        ]
+
+        tag From97 {
+            value = "sr_il2"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9440, 9240
+            size = 100, 20
+        ]
+
+        tag From98 {
+            value = "sr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9440, 9304
+            size = 100, 20
+        ]
+
+        tag Goto102 {
+            value = "sr_pwma"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9864, 8952
+            size = 124, 20
+        ]
+
+        tag Goto103 {
+            value = "sr_pwmb"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9864, 9128
+            size = 124, 20
+        ]
+
+        tag Goto104 {
+            value = "sr_iref_signal"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9864, 9304
+            size = 124, 20
+        ]
+
+        tag Goto105 {
+            value = "grid_valpha"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 7632, 7848
+            size = 124, 20
+        ]
+
+        tag Goto106 {
+            value = "grid_vbeta"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 7632, 7976
+            size = 124, 20
+        ]
+
+        tag Goto107 {
+            value = "grid_freq"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 7632, 8088
+            size = 124, 20
+        ]
+
+        tag Goto108 {
+            value = "grid_vrms"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 7632, 8216
+            size = 124, 20
+        ]
+
+        tag Goto109 {
+            value = "grid_sin"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 7632, 8328
+            size = 124, 20
+        ]
+
+        tag Goto110 {
+            value = "grid_cos"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 7632, 8456
+            size = 124, 20
+        ]
+
+        tag From99 {
+            value = "fr_phase_error"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 10424, 8312
+            size = 100, 20
+        ]
+
+        tag From100 {
+            value = "fr_voltage_error"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 10424, 8392
+            size = 101, 20
+        ]
+
+        tag Goto111 {
+            value = "mgcc_tran2tied"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 10824, 7768
+            size = 124, 20
+        ]
+
+        tag Goto112 {
+            value = "mgcc_tran2islanded"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 10824, 7928
+            size = 124, 20
+        ]
+
+        tag Goto113 {
+            value = "sr_enable"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 10824, 8456
+            size = 124, 20
+        ]
+
+        tag Goto114 {
+            value = "fr_enable"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 10824, 8296
+            size = 124, 20
+        ]
+
+        tag Goto115 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 10824, 8136
+            size = 124, 20
+        ]
+
+        tag From101 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 7248
+            size = 100, 20
+        ]
+
+        tag From102 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 10112, 6648
+            size = 100, 20
+        ]
+
+        tag From103 {
+            value = "fr_valpha"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 5776
+            size = 100, 20
+        ]
+
+        tag From104 {
+            value = "fr_vbeta"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 5824
+            size = 100, 20
+        ]
+
+        tag From105 {
+            value = "fr_ialpha"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 5888
+            size = 100, 20
+        ]
+
+        tag From106 {
+            value = "fr_ibeta"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 5936
+            size = 100, 20
+        ]
+
+        tag From107 {
+            value = "fr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6112
+            size = 100, 20
+        ]
+
+        tag Goto116 {
+            value = "fr_id"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 5760
+            size = 124, 20
+        ]
+
+        tag Goto117 {
+            value = "fr_iq"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 5904
+            size = 124, 20
+        ]
+
+        tag Goto118 {
+            value = "fr_p_tied"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6032
+            size = 124, 20
+        ]
+
+        tag Goto119 {
+            value = "fr_q_tied"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9240, 6176
+            size = 124, 20
+        ]
+
+        tag From108 {
+            value = "fr_id"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 5776
+            size = 92, 20
+        ]
+
+        tag From109 {
+            value = "fr_iq"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 5832
+            size = 92, 20
+        ]
+
+        tag From110 {
+            value = "fr_sin"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 5888
+            size = 92, 20
+        ]
+
+        tag From111 {
+            value = "fr_cos"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 5944
+            size = 92, 20
+        ]
+
+        tag From112 {
+            value = "fr_il1"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6000
+            size = 92, 20
+        ]
+
+        tag From113 {
+            value = "fr_enable"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6056
+            size = 92, 20
+        ]
+
+        tag Goto120 {
+            value = "fr_pwma2"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9904, 5768
+            size = 124, 20
+        ]
+
+        tag Goto121 {
+            value = "fr_pwmb2"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9904, 5944
+            size = 124, 20
+        ]
+
+        tag Goto122 {
+            value = "sr_iref_signal"
+            scope = local
+            kind = sp
+            direction = in
+        }
+        [
+            position = 9904, 6120
+            size = 124, 20
+        ]
+
+        tag From114 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8808, 6160
+            size = 100, 20
+        ]
+
+        tag From115 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 9464, 6112
+            size = 92, 20
+        ]
+
+        tag From116 {
+            value = "fr_pwma2"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8184, 7688
+            size = 124, 20
+        ]
+
+        tag From117 {
+            value = "fr_pwmb1"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8184, 7520
+            size = 124, 20
+        ]
+
+        tag From118 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 7920, 7560
+            size = 124, 20
+        ]
+
+        tag From119 {
+            value = "sr_vc"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8192, 9368
+            size = 60, 20
+        ]
+
+        tag From123 {
+            value = "mgcc_microgridstatus"
+            scope = local
+            kind = sp
+            direction = out
+        }
+        [
+            position = 7920, 6376
+            size = 124, 20
+        ]
+
+        junction Junction60 sp
+        [
+            position = 8312, 8944
+        ]
+
+        junction Junction109 sp
+        [
+            position = 8312, 9552
+        ]
+
+        junction Junction51 sp
+        [
+            position = 8528, 6304
+        ]
+
+        junction Junction160 sp
+        [
+            position = 7344, 8152
+        ]
+
+        junction Junction186 sp
+        [
+            position = 8336, 6584
+        ]
+
+        junction Junction235 pe
+        [
+            position = 8976, 7832
+        ]
+
+        junction Junction237 pe
+        [
+            position = 8976, 8136
+        ]
+
+        junction Junction238 pe
+        [
+            position = 9112, 8136
+        ]
+
+        junction Junction239 pe
+        [
+            position = 9384, 7832
+        ]
+
+        junction Junction240 pe
+        [
+            position = 9384, 8136
+        ]
+
+        junction Junction242 pe
+        [
+            position = 8976, 8552
+        ]
+
+        junction Junction244 pe
+        [
+            position = 9264, 8136
+        ]
+
+        junction Junction253 pe
+        [
+            position = 8976, 7832
+        ]
+
+        junction Junction255 pe
+        [
+            position = 8976, 8360
+        ]
+
+        junction Junction256 sp
+        [
+            position = 8544, 8248
+        ]
+
+        junction Junction261 pe
+        [
+            position = 9112, 7832
+        ]
+
+        junction Junction263 sp
+        [
+            position = 8528, 6384
+        ]
+
+        junction Junction264 sp
+        [
+            position = 8528, 6464
+        ]
+
+        junction Junction265 sp
+        [
+            position = 8528, 6544
+        ]
+
+        junction Junction267 sp
+        [
+            position = 8528, 6704
+        ]
+
+        junction Junction268 sp
+        [
+            position = 8528, 6784
+        ]
+
+        junction Junction269 sp
+        [
+            position = 8528, 6864
+        ]
+
+        junction Junction270 sp
+        [
+            position = 8528, 6624
+        ]
+
+        junction Junction271 sp
+        [
+            position = 9160, 6288
+        ]
+
+        junction Junction272 sp
+        [
+            position = 9160, 6368
+        ]
+
+        junction Junction273 sp
+        [
+            position = 9160, 6464
+        ]
+
+        junction Junction274 sp
+        [
+            position = 9160, 6544
+        ]
+
+        junction Junction275 sp
+        [
+            position = 9160, 6640
+        ]
+
+        junction Junction276 sp
+        [
+            position = 9160, 6720
+        ]
+
+        junction Junction277 sp
+        [
+            position = 9160, 6816
+        ]
+
+        junction Junction278 sp
+        [
+            position = 9160, 6896
+        ]
+
+        junction Junction279 sp
+        [
+            position = 9160, 6992
+        ]
+
+        junction Junction280 sp
+        [
+            position = 9160, 7072
+        ]
+
+        junction Junction281 sp
+        [
+            position = 9160, 7168
+        ]
+
+        junction Junction282 sp
+        [
+            position = 9160, 7248
+        ]
+
+        junction Junction283 sp
+        [
+            position = 9824, 6712
+        ]
+
+        junction Junction284 sp
+        [
+            position = 9824, 6280
+        ]
+
+        junction Junction285 sp
+        [
+            position = 10480, 6296
+        ]
+
+        junction Junction287 sp
+        [
+            position = 10480, 6648
+        ]
+
+        junction Junction295 sp
+        [
+            position = 8528, 9528
+        ]
+
+        junction Junction296 sp
+        [
+            position = 8528, 9448
+        ]
+
+        junction Junction297 sp
+        [
+            position = 8528, 8968
+        ]
+
+        junction Junction298 sp
+        [
+            position = 8528, 9048
+        ]
+
+        junction Junction299 sp
+        [
+            position = 8528, 9128
+        ]
+
+        junction Junction300 sp
+        [
+            position = 8528, 9208
+        ]
+
+        junction Junction301 sp
+        [
+            position = 8528, 9288
+        ]
+
+        junction Junction302 sp
+        [
+            position = 8528, 9368
+        ]
+
+        junction Junction304 sp
+        [
+            position = 9152, 9064
+        ]
+
+        junction Junction305 sp
+        [
+            position = 9152, 9192
+        ]
+
+        junction Junction306 sp
+        [
+            position = 9152, 9304
+        ]
+
+        junction Junction307 sp
+        [
+            position = 9152, 8952
+        ]
+
+        junction Junction308 sp
+        [
+            position = 9784, 9304
+        ]
+
+        junction Junction309 sp
+        [
+            position = 9784, 9128
+        ]
+
+        junction Junction310 sp
+        [
+            position = 9784, 8952
+        ]
+
+        junction Junction311 sp
+        [
+            position = 7552, 7848
+        ]
+
+        junction Junction312 sp
+        [
+            position = 7552, 7976
+        ]
+
+        junction Junction313 sp
+        [
+            position = 7552, 8088
+        ]
+
+        junction Junction314 sp
+        [
+            position = 7552, 8216
+        ]
+
+        junction Junction315 sp
+        [
+            position = 7552, 8328
+        ]
+
+        junction Junction316 sp
+        [
+            position = 7552, 8456
+        ]
+
+        junction Junction317 sp
+        [
+            position = 10744, 7768
+        ]
+
+        junction Junction318 sp
+        [
+            position = 10744, 7928
+        ]
+
+        junction Junction319 sp
+        [
+            position = 10744, 8408
+        ]
+
+        junction Junction320 sp
+        [
+            position = 10744, 8248
+        ]
+
+        junction Junction321 sp
+        [
+            position = 10744, 8088
+        ]
+
+        junction Junction326 sp
+        [
+            position = 9824, 6120
+        ]
+
+        junction Junction327 sp
+        [
+            position = 9824, 5944
+        ]
+
+        junction Junction328 sp
+        [
+            position = 9824, 5768
+        ]
+
+        junction Junction329 sp
+        [
+            position = 8880, 6768
+        ]
+
+        junction Junction330 sp
+        [
+            position = 8896, 6848
+        ]
+
+        junction Junction331 sp
+        [
+            position = 9160, 6176
+        ]
+
+        junction Junction332 sp
+        [
+            position = 9160, 6032
+        ]
+
+        junction Junction333 sp
+        [
+            position = 9160, 5904
+        ]
+
+        junction Junction334 sp
+        [
+            position = 9160, 5760
+        ]
+
+        junction Junction335 sp
+        [
+            position = 8400, 7600
+        ]
+
+        junction Junction337 sp
+        [
+            position = 8264, 6464
+        ]
+
+        junction Junction338 sp
+        [
+            position = 8272, 6352
+        ]
+
+        junction Junction339 sp
+        [
+            position = 8544, 7736
+        ]
+
+        junction Junction340 pe
+        [
+            position = 9208, 7832
+        ]
+
+        connect "Grid Following Inverter.a_in" "LCL Filter.Vin+" as Connection4750
+        connect "LCL Filter.i_l1" Goto33 as Connection4751
+        connect Vcc1.p_node Rpv2.n_node as Connection4754
+        connect Rpv2.p_node "Grid Following Inverter.pos_out" as Connection4755
+        connect "Grid Following Inverter.b_in" "LCL Filter.Vin-" as Connection4762
+        [
+            breakpoints = 8648, 8552
+        ]
+        connect From39 "Grid Following Inverter.InA" as Connection4767
+        connect From40 "Grid Following Inverter.InB" as Connection4768
+        connect From43 Junction60 as Connection384
+        connect Junction60 sr_pll.in_v as Connection385
+        connect sr_vpoi.in Junction60 as Connection386
+        connect sr_il2.in Junction109 as Connection4808
+        connect Junction109 sr_pll.in_i as Connection4809
+        [
+            breakpoints = 8312, 9552; 8312, 9552
+        ]
+        connect From44 Junction109 as Connection4810
+        connect sr_pq_control.in_enabled "Rate Transition16.out" as Connection4813
+        [
+            breakpoints = 9000, 9296
+        ]
+        connect "Rate Transition1.out" sr_pq_control.in_v_alpha as Connection4814
+        connect "Rate Transition2.out" sr_pq_control.in_v_beta as Connection4815
+        connect "Rate Transition3.out" sr_pq_control.in_i_alpha as Connection4816
+        connect "Rate Transition4.out" sr_pq_control.in_i_beta as Connection4817
+        connect "LCL Filter.v_c" Goto35 as Connection4820
+        connect fr_sogi_qsg.out_v_alpha Junction51 as Connection348
+        connect Junction51 Goto6 as Connection349
+        connect fr_valpha.in Junction51 as Connection350
+        connect "Grid Forming Inverter.a_in" "LC Filter.Vin+" as Connection71
+        connect "LC Filter.i_l1" Goto2 as Connection86
+        connect "LC Filter.v_c" Goto4 as Connection88
+        connect Vcc.p_node Rpv1.n_node as Connection99
+        connect Rpv1.p_node "Grid Forming Inverter.pos_out" as Connection100
+        connect "Grid Forming Inverter.b_in" "LC Filter.Vin-" as Connection4588
+        [
+            breakpoints = 8648, 8024
+        ]
+        connect "Rate Transition9.in" From29 as Connection4658
+        connect "Rate Transition13.in" From33 as Connection4681
+        connect From16 "Rate Transition5.in" as Connection4695
+        connect "Rate Transition5.out" fr_prop_i_control.in_u_cv as Connection4696
+        connect Goto22 v_aux.out as Connection4524
+        connect Goto23 i_aux.out as Connection4525
+        connect From47 Junction160 as Connection5169
+        connect Junction160 grid_sogi.in_v as Connection5170
+        connect grid_v.in Junction160 as Connection5171
+        connect "HIL Flags Status1.spc_ao" debug_spc.in as Connection5242
+        [
+            breakpoints = 7240, 7608; 7240, 7544
+        ]
+        connect "HIL Flags Status1.dtv" debug_dtv.in as Connection5243
+        [
+            breakpoints = 7240, 7640; 7240, 7704
+        ]
+        connect "HIL Flags Status1.mch_ao" debug_mch.in as Connection5244
+        connect fr_il1.in Junction186 as Connection5324
+        connect Junction186 From10 as Connection5325
+        [
+            breakpoints = 8336, 6632
+        ]
+        connect fr_sogi_qsg.in_i Junction186 as Connection5326
+        connect From51 S4.ctrl_in as Connection5336
+        connect "Rate Transition20.in" From52 as Connection5337
+        connect fr_sogi_qsg.in_enabled "Rate Transition20.out" as Connection5338
+        connect "Rate Transition22.out" fr_prop_i_control.in_enabled as Connection5342
+        connect sr_pq_control.in_p_ref "Rate Transition27.out" as Connection5368
+        connect "Rate Transition28.out" sr_pq_control.in_q_ref as Connection5370
+        connect "Rate Transition13.out" fr_v_control.in_v_ref as Connection5447
+        connect Goto66 "LCL Filter.i_l2" as Connection5509
+        connect From60 sr_il1.in as Connection5510
+        connect vpoi1.out Goto1 as Connection5534
+        connect Goto61 vpoi2.out as Connection5535
+        connect i_aux.p_node Grid.P1 as Connection5593
+        connect "Core Marker1.node" Junction235 as Connection5600
+        connect Junction237 "LC Filter.Vout-" as Connection5605
+        [
+            breakpoints = 8904, 8136; 8904, 7896
+        ]
+        connect vpoi1.n_node Junction237 as Connection5606
+        connect Lload.p_node Junction238 as Connection5609
+        connect Junction239 i_aux.n_node as Connection5611
+        connect v_aux.p_node Junction239 as Connection5612
+        connect Grid.P2 Junction240 as Connection5613
+        connect v_aux.n_node Junction240 as Connection5615
+        connect "Core Coupling 1.b_in" Junction242 as Connection5622
+        connect Junction242 "LCL Filter.Vout-" as Connection5623
+        [
+            breakpoints = 8904, 8552; 8904, 8408
+        ]
+        connect vpoi2.n_node Junction242 as Connection5624
+        connect Junction240 Junction244 as Connection5628
+        connect Junction244 Junction238 as Connection5629
+        connect "Core Coupling 1.b_out" Junction244 as Connection5630
+        [
+            breakpoints = 9264, 8552; 9264, 8136
+        ]
+        connect From42 "Rate Transition29.in" as Connection5666
+        connect Junction235 S1.a_out as Connection5670
+        [
+            breakpoints = 8976, 7832; 8976, 7832; 8976, 7832; 8976, 7832; 8976, 7832
+        ]
+        connect Junction253 Junction235 as Connection5672
+        connect vpoi1.p_node Junction253 as Connection5673
+        connect "Core Coupling 1.a_in" Junction255 as Connection5685
+        connect Junction255 vpoi2.p_node as Connection5686
+        [
+            breakpoints = 8976, 8360; 8976, 8360; 8976, 8360; 8976, 8360
+        ]
+        connect S5.a_out Junction255 as Connection5687
+        connect S5.a_in "LCL Filter.Vout+" as Connection5688
+        connect "Grid Following Inverter.En" Junction256 as Connection5689
+        connect Junction256 "Rate Transition29.out" as Connection5690
+        [
+            breakpoints = 8544, 8248; 8544, 8248
+        ]
+        connect S5.ctrl_in Junction256 as Connection5691
+        connect From55 "Rate Transition30.in" as Connection5706
+        connect "Rate Transition9.out" fr_droop.in_v_alpha as Connection5710
+        connect S1.a_in "LC Filter.Vout+" as Connection5734
+        connect "Grid Forming Inverter.neg_out" Vcc.n_node as Connection5735
+        [
+            breakpoints = 8360, 8024; 8360, 8024; 8360, 8024; 8360, 8024
+        ]
+        connect "Grid Following Inverter.neg_out" Vcc1.n_node as Connection5736
+        [
+            breakpoints = 8360, 8552; 8360, 8552; 8360, 8552; 8360, 8552
+        ]
+        connect Junction238 Junction237 as Connection5740
+        [
+            breakpoints = 9112, 8136; 9096, 8136; 9096, 8136; 9080, 8136
+        ]
+        connect Lload.n_node Rload.p_node as Connection5741
+        connect Rload.n_node S3.a_in as Connection5742
+        connect S4.a_out Junction239 as Connection5747
+        [
+            breakpoints = 9384, 7832
+        ]
+        connect "Core Marker2.node" Junction255 as Connection5748
+        connect Junction253 Junction261 as Connection5770
+        [
+            breakpoints = 8976, 7832; 8976, 7832
+        ]
+        connect Junction261 S3.a_out as Connection5771
+        [
+            breakpoints = 9112, 7832
+        ]
+        connect Junction263 Goto67 as Connection5793
+        connect fr_vbeta.in Junction263 as Connection5794
+        connect Junction264 Goto68 as Connection5795
+        connect fr_freq.in Junction264 as Connection5796
+        connect Junction265 Goto69 as Connection5797
+        connect fr_ialpha.in Junction265 as Connection5798
+        connect Junction267 Goto71 as Connection5801
+        connect fr_vrms.in Junction267 as Connection5802
+        connect Junction268 Goto72 as Connection5803
+        connect fr_sin.in Junction268 as Connection5804
+        connect Junction269 Goto73 as Connection5805
+        connect fr_cos.in Junction269 as Connection5806
+        connect fr_sogi_qsg.out_v_beta Junction263 as Connection5807
+        connect fr_sogi_qsg.out_freq Junction264 as Connection5808
+        connect fr_sogi_qsg.out_i_alpha Junction265 as Connection5809
+        connect fr_ibeta.in Junction270 as Connection5810
+        connect fr_sogi_qsg.out_i_beta Junction270 as Connection5812
+        connect fr_sogi_qsg.out_v_rms Junction267 as Connection5813
+        connect fr_sogi_qsg.out_sen_wt Junction268 as Connection5814
+        connect fr_sogi_qsg.out_cos_wt Junction269 as Connection5815
+        connect Junction270 Goto70 as Connection5816
+        [
+            breakpoints = 8528, 6624; 8528, 6624
+        ]
+        connect "Rate Transition41.in" From68 as Connection5817
+        connect "Rate Transition42.in" From69 as Connection5818
+        connect "Rate Transition43.in" From70 as Connection5819
+        connect "Rate Transition44.in" From71 as Connection5820
+        connect "Rate Transition45.in" From72 as Connection5821
+        connect "Rate Transition48.in" From75 as Connection5824
+        connect "Rate Transition49.in" From76 as Connection5825
+        connect "Rate Transition50.in" From77 as Connection5826
+        connect "Rate Transition51.in" From78 as Connection5827
+        connect "Rate Transition41.out" fr_droop.in_v_beta as Connection5828
+        connect fr_droop.in_grid_v_alpha "Rate Transition42.out" as Connection5829
+        connect "Rate Transition43.out" fr_droop.in_grid_v_beta as Connection5830
+        connect "Rate Transition44.out" fr_droop.in_i_alpha as Connection5831
+        connect "Rate Transition45.out" fr_droop.in_i_beta as Connection5832
+        connect "Rate Transition46.out" fr_droop.in_p0 as Connection5833
+        connect "Rate Transition47.out" fr_droop.in_q0 as Connection5834
+        connect "Rate Transition48.out" fr_droop.in_grid_v_rms as Connection5835
+        connect "Rate Transition49.out" fr_droop.in_ugrid_v_rms as Connection5836
+        connect "Rate Transition50.out" fr_droop.in_transition2tied as Connection5837
+        connect fr_vref.in Junction271 as Connection5859
+        connect Junction271 Goto74 as Connection5860
+        connect fr_droop.out_v_ref Junction271 as Connection5861
+        connect fr_wref.in Junction272 as Connection5862
+        connect Junction272 Goto75 as Connection5863
+        connect fr_droop.out_w_ref Junction272 as Connection5864
+        connect fr_p.in Junction273 as Connection5865
+        connect Junction273 Goto76 as Connection5866
+        connect fr_droop.out_p Junction273 as Connection5867
+        connect fr_q.in Junction274 as Connection5868
+        connect Junction274 Goto77 as Connection5869
+        connect fr_droop.out_q Junction274 as Connection5870
+        connect fr_phase_error.in Junction275 as Connection5871
+        connect Junction275 Goto78 as Connection5872
+        connect fr_droop.out_phase_error Junction275 as Connection5873
+        connect fr_voltage_error.in Junction276 as Connection5874
+        connect Junction276 Goto79 as Connection5875
+        connect fr_droop.out_voltage_error Junction276 as Connection5876
+        connect fr_wsync.in Junction277 as Connection5877
+        connect Junction277 Goto80 as Connection5878
+        connect fr_droop.out_w_sync Junction277 as Connection5879
+        connect fr_vsync.in Junction278 as Connection5880
+        connect Junction278 Goto81 as Connection5881
+        connect fr_droop.out_vrms_sync Junction278 as Connection5882
+        connect fr_grid_theta.in Junction279 as Connection5883
+        connect Junction279 Goto82 as Connection5884
+        connect fr_droop.out_theta_grid Junction279 as Connection5885
+        connect fr_microgrid_theta.in Junction280 as Connection5886
+        connect Junction280 Goto83 as Connection5887
+        connect fr_droop.out_utheta_grid Junction280 as Connection5888
+        connect fr_grid_voltage.in Junction281 as Connection5889
+        connect Junction281 Goto84 as Connection5890
+        connect fr_droop.out_grid_voltage Junction281 as Connection5891
+        connect fr_microgrid_voltage.in Junction282 as Connection5892
+        connect Junction282 Goto85 as Connection5893
+        connect fr_droop.out_ugrid_voltage Junction282 as Connection5894
+        connect "Rate Transition52.in" From79 as Connection5895
+        connect "Rate Transition52.out" fr_v_control.in_w_ref as Connection5896
+        connect "Rate Transition53.in" From80 as Connection5897
+        connect "Rate Transition53.out" fr_v_control.in_vc as Connection5898
+        connect "Rate Transition54.in" From81 as Connection5899
+        connect "Rate Transition54.out" fr_v_control.in_enabled as Connection5900
+        connect "Rate Transition55.in" From82 as Connection5901
+        connect "Rate Transition55.out" fr_v_control.in_v_rede as Connection5902
+        connect "Rate Transition56.in" From83 as Connection5903
+        connect "Rate Transition56.out" fr_v_control.in_is_tied as Connection5904
+        connect Goto87 Junction283 as Connection5913
+        connect Junction283 fr_vref_signal.in as Connection5914
+        [
+            breakpoints = 9824, 6744; 9952, 6744
+        ]
+        connect fr_v_control.out_v_ref_wave Junction283 as Connection5915
+        connect fr_v_action.in Junction284 as Connection5917
+        connect Junction284 Goto86 as Connection5918
+        connect fr_v_control.out_u Junction284 as Connection5919
+        connect From84 fr_prop_i_control.in_i_meas as Connection5920
+        connect From85 "Rate Transition22.in" as Connection5921
+        connect fr_pwma1.in Junction285 as Connection5922
+        connect Junction285 Goto88 as Connection5923
+        connect fr_prop_i_control.out_ua Junction285 as Connection5926
+        connect Junction287 Goto89 as Connection5928
+        connect fr_prop_i_control.out_ub Junction287 as Connection5929
+        connect fr_pwmb1.in Junction287 as Connection5933
+        [
+            breakpoints = 10480, 6648
+        ]
+        connect Goto97 Junction295 as Connection5985
+        connect Junction295 sr_pll.out_cos_wt as Connection5986
+        connect sr_cos.in Junction295 as Connection5987
+        connect sr_sin.in Junction296 as Connection5989
+        connect Junction296 Goto96 as Connection5990
+        connect sr_pll.out_sen_wt Junction296 as Connection5991
+        connect Goto90 Junction297 as Connection5993
+        connect Junction297 sr_valpha.in as Connection5994
+        [
+            breakpoints = 8528, 9000; 8656, 9000
+        ]
+        connect sr_pll.out_v_alpha Junction297 as Connection5995
+        connect sr_vbeta.in Junction298 as Connection5997
+        connect Junction298 Goto91 as Connection5998
+        connect sr_pll.out_v_beta Junction298 as Connection5999
+        connect sr_freq.in Junction299 as Connection6001
+        connect Junction299 Goto92 as Connection6002
+        connect sr_pll.out_freq Junction299 as Connection6003
+        connect sr_ialpha.in Junction300 as Connection6005
+        connect Junction300 Goto93 as Connection6006
+        connect sr_pll.out_i_alpha Junction300 as Connection6007
+        connect sr_ibeta.in Junction301 as Connection6009
+        connect Junction301 Goto94 as Connection6010
+        connect sr_pll.out_i_beta Junction301 as Connection6011
+        connect sr_vrms.in Junction302 as Connection6013
+        connect Junction302 Goto95 as Connection6014
+        connect sr_pll.out_v_rms Junction302 as Connection6015
+        connect From86 "Rate Transition1.in" as Connection6016
+        connect From87 "Rate Transition2.in" as Connection6017
+        connect From88 "Rate Transition3.in" as Connection6018
+        connect "Rate Transition4.in" From89 as Connection6019
+        connect From92 "Rate Transition16.in" as Connection6022
+        connect "Rate Transition28.in" sr_qref.out as Connection6023
+        connect sr_pref.out "Rate Transition27.in" as Connection6024
+        connect sr_iq.in Junction304 as Connection6027
+        connect Junction304 Goto99 as Connection6028
+        connect sr_p.in Junction305 as Connection6029
+        connect Junction305 Goto100 as Connection6030
+        connect sr_q.in Junction306 as Connection6031
+        connect Junction306 Goto101 as Connection6032
+        connect sr_pq_control.out_q Junction306 as Connection6033
+        connect sr_pq_control.out_p Junction305 as Connection6034
+        [
+            breakpoints = 9168, 9192
+        ]
+        connect sr_pq_control.out_iq Junction304 as Connection6035
+        connect sr_id.in Junction307 as Connection6037
+        connect Junction307 Goto98 as Connection6038
+        connect sr_pq_control.out_id Junction307 as Connection6039
+        connect From93 "Rate Transition57.in" as Connection6040
+        connect "Rate Transition57.out" sr_i_control.in_id as Connection6041
+        connect From94 "Rate Transition58.in" as Connection6042
+        connect "Rate Transition58.out" sr_i_control.in_iq as Connection6043
+        connect "Rate Transition62.out" sr_i_control.in_enabled as Connection6051
+        connect From98 "Rate Transition62.in" as Connection6052
+        connect sr_iref_signal.in Junction308 as Connection6068
+        connect Junction308 Goto104 as Connection6069
+        connect sr_i_control.out_ref Junction308 as Connection6070
+        connect sr_pwmb.in Junction309 as Connection6071
+        connect Junction309 Goto103 as Connection6072
+        connect sr_i_control.out_ub Junction309 as Connection6073
+        connect sr_pwma.in Junction310 as Connection6074
+        connect Junction310 Goto102 as Connection6075
+        connect sr_i_control.out_ua Junction310 as Connection6076
+        connect grid_valpha.in Junction311 as Connection6077
+        connect Junction311 Goto105 as Connection6078
+        connect grid_sogi.out_v_alpha Junction311 as Connection6079
+        connect grid_vbeta.in Junction312 as Connection6085
+        connect Junction312 Goto106 as Connection6086
+        connect grid_freq.in Junction313 as Connection6087
+        connect Junction313 Goto107 as Connection6088
+        connect grid_vrms.in Junction314 as Connection6089
+        connect Junction314 Goto108 as Connection6090
+        connect grid_sin.in Junction315 as Connection6091
+        connect Junction315 Goto109 as Connection6092
+        connect grid_cos.in Junction316 as Connection6093
+        connect Junction316 Goto110 as Connection6094
+        connect grid_sogi.out_v_beta Junction312 as Connection6095
+        connect grid_sogi.out_freq Junction313 as Connection6096
+        connect grid_sogi.out_v_rms Junction314 as Connection6097
+        connect grid_sogi.out_sen_wt Junction315 as Connection6098
+        connect grid_sogi.out_cos_wt Junction316 as Connection6099
+        connect From99 "Rate Transition63.in" as Connection6100
+        connect From100 "Rate Transition64.in" as Connection6101
+        connect mgcc_req2tieSR.out microgrid_controller.in_req2tie_gfollow as Connection6102
+        connect mgcc_req2untieSR.out microgrid_controller.in_req2untie_gfollow as Connection6103
+        connect mgcc_req2untieFR.out microgrid_controller.in_req2untie_gform as Connection6104
+        connect mgcc_req2tieFR.out microgrid_controller.in_req2tie_gform as Connection6105
+        connect mgcc_req2island.out microgrid_controller.in_req2untie as Connection6106
+        connect mgcc_req2tie.out microgrid_controller.in_req2tie as Connection6107
+        connect "Rate Transition63.out" microgrid_controller.in_phase_error as Connection6108
+        connect "Rate Transition64.out" microgrid_controller.in_voltage_error as Connection6109
+        connect mgcc_tran2tied.in Junction317 as Connection6114
+        connect Junction317 Goto111 as Connection6115
+        connect mgcc_tran2islanded.in Junction318 as Connection6116
+        connect Junction318 Goto112 as Connection6117
+        connect microgrid_controller.out_transition2tied Junction317 as Connection6118
+        connect microgrid_controller.out_transition2untied Junction318 as Connection6119
+        connect sr_off.in not3.out as Connection6120
+        connect Goto113 Junction319 as Connection6122
+        connect Junction319 sr_on.in as Connection6123
+        connect not3.in Junction319 as Connection6124
+        connect microgrid_controller.out_gfollow_enable Junction319 as Connection6125
+        connect fr_off.in not4.out as Connection6126
+        connect Goto114 Junction320 as Connection6127
+        connect Junction320 fr_on.in as Connection6128
+        connect not4.in Junction320 as Connection6129
+        connect microgrid_islanded.in not5.out as Connection6130
+        connect Goto115 Junction321 as Connection6131
+        connect Junction321 microgrid_tied.in as Connection6132
+        connect not5.in Junction321 as Connection6133
+        connect microgrid_controller.out_gform_enable Junction320 as Connection6134
+        connect microgrid_controller.out_tie2grid Junction321 as Connection6135
+        connect grid_i.in From38 as Connection6136
+        [
+            breakpoints = 7344, 8352; 7344, 8280
+        ]
+        connect From95 sr_i_control.in_sin_wt as Connection6137
+        connect From97 sr_i_control.in_i_meas as Connection6138
+        connect From96 sr_i_control.in_cos_wt as Connection6139
+        connect "Rate Transition51.out" fr_droop.in_enabled as Connection6140
+        connect "Rate Transition65.in" From101 as Connection6141
+        connect fr_droop.in_is_tied "Rate Transition65.out" as Connection6142
+        connect "Rate Transition66.in" From102 as Connection6143
+        connect fr_prop_i_control.in_is_tied "Rate Transition66.out" as Connection6144
+        connect "Rate Transition67.out" fr_pq_control.in_v_alpha as Connection6146
+        connect "Rate Transition68.out" fr_pq_control.in_v_beta as Connection6147
+        connect "Rate Transition69.out" fr_pq_control.in_i_alpha as Connection6148
+        connect "Rate Transition70.out" fr_pq_control.in_i_beta as Connection6149
+        connect fr_pq_control.in_p_ref "Rate Transition72.out" as Connection6150
+        connect "Rate Transition73.out" fr_pq_control.in_q_ref as Connection6151
+        connect From103 "Rate Transition67.in" as Connection6152
+        connect From104 "Rate Transition68.in" as Connection6153
+        connect From105 "Rate Transition69.in" as Connection6154
+        connect "Rate Transition70.in" From106 as Connection6155
+        connect From107 "Rate Transition71.in" as Connection6156
+        connect From108 "Rate Transition74.in" as Connection6171
+        connect "Rate Transition74.out" fr_res_i_control.in_id as Connection6172
+        connect From109 "Rate Transition75.in" as Connection6173
+        connect "Rate Transition75.out" fr_res_i_control.in_iq as Connection6174
+        connect "Rate Transition76.out" fr_res_i_control.in_enabled as Connection6175
+        connect From113 "Rate Transition76.in" as Connection6176
+        connect fr_iref_signal.in Junction326 as Connection6177
+        connect Junction326 Goto122 as Connection6178
+        connect fr_res_i_control.out_ref Junction326 as Connection6179
+        connect fr_pwmb2.in Junction327 as Connection6180
+        connect Junction327 Goto121 as Connection6181
+        connect fr_res_i_control.out_ub Junction327 as Connection6182
+        connect fr_pwma2.in Junction328 as Connection6183
+        connect Junction328 Goto120 as Connection6184
+        connect fr_res_i_control.out_ua Junction328 as Connection6185
+        connect From110 fr_res_i_control.in_sin_wt as Connection6186
+        connect From112 fr_res_i_control.in_i_meas as Connection6187
+        connect From111 fr_res_i_control.in_cos_wt as Connection6188
+        connect fr_pq_control.in_enabled "Rate Transition71.out" as Connection6189
+        connect fr_pref.out Junction329 as Connection6194
+        connect Junction329 "Rate Transition46.in" as Connection6195
+        connect "Rate Transition72.in" Junction329 as Connection6196
+        connect fr_qref.out Junction330 as Connection6197
+        connect Junction330 "Rate Transition47.in" as Connection6198
+        connect "Rate Transition73.in" Junction330 as Connection6199
+        connect "Rate Transition77.in" From114 as Connection6200
+        connect "Rate Transition77.out" fr_pq_control.in_is_tied as Connection6201
+        connect Goto119 Junction331 as Connection6202
+        connect Junction331 fr_q_tied.in as Connection6203
+        [
+            breakpoints = 9160, 6208; 9288, 6208
+        ]
+        connect fr_pq_control.out_q Junction331 as Connection6204
+        connect fr_p_tied.in Junction332 as Connection6205
+        connect Junction332 Goto118 as Connection6206
+        connect fr_pq_control.out_p Junction332 as Connection6207
+        connect sr_iq1.in Junction333 as Connection6208
+        connect Junction333 Goto117 as Connection6209
+        connect fr_pq_control.out_iq Junction333 as Connection6210
+        connect sr_id1.in Junction334 as Connection6211
+        connect Junction334 Goto116 as Connection6212
+        connect fr_pq_control.out_id Junction334 as Connection6213
+        connect "Rate Transition78.in" From115 as Connection6214
+        connect "Rate Transition78.out" fr_res_i_control.in_is_tied as Connection6215
+        connect From117 "Multiport signal switch2.in" as Connection6221
+        connect From18 "Multiport signal switch2.in1" as Connection6222
+        [
+            breakpoints = 8264, 7560; 8264, 7536
+        ]
+        connect From17 "Multiport signal switch1.in" as Connection6223
+        connect From116 "Multiport signal switch1.in1" as Connection6224
+        [
+            breakpoints = 8264, 7688; 8264, 7664
+        ]
+        connect "Multiport signal switch1.out" "Grid Forming Inverter.InA" as Connection6225
+        connect "Multiport signal switch2.out" "Grid Forming Inverter.InB" as Connection6226
+        connect From119 sr_vc.in as Connection6229
+        connect From118 "Rate Transition80.in" as Connection6235
+        connect "Rate Transition80.out" Sum1.in as Connection6236
+        [
+            breakpoints = 8088, 7592; 8104, 7592
+        ]
+        connect "Multiport signal switch1.ctrl" Junction335 as Connection6238
+        connect Junction335 "Multiport signal switch2.ctrl" as Connection6239
+        [
+            breakpoints = 8400, 7600; 8400, 7600; 8400, 7504
+        ]
+        connect Sum1.out Junction335 as Connection6240
+        connect Constant1.out Sum1.in1 as Connection6241
+        [
+            breakpoints = 8088, 7648; 8088, 7608
+        ]
+        connect From123 "Rate Transition81.in" as Connection6253
+        connect Sum2.out "Multiport signal switch3.ctrl" as Connection6256
+        connect Constant3.out Sum2.in1 as Connection6257
+        connect "Rate Transition81.out" Sum2.in as Connection6258
+        connect From65 Junction337 as Connection6259
+        connect Junction337 fr_vpoi.in as Connection6260
+        [
+            breakpoints = 8264, 6464; 8264, 6528
+        ]
+        connect "Multiport signal switch3.in1" Junction337 as Connection6261
+        connect From6 Junction338 as Connection6263
+        connect Junction338 fr_vc.in as Connection6264
+        connect "Multiport signal switch3.in" Junction338 as Connection6265
+        connect "Multiport signal switch3.out" fr_sogi_qsg.in_v as Connection6266
+        connect "Grid Forming Inverter.En" Junction339 as Connection6267
+        connect Junction339 "Rate Transition30.out" as Connection6268
+        [
+            breakpoints = 8544, 7736; 8544, 7736; 8544, 7736; 8544, 7736
+        ]
+        connect S1.ctrl_in Junction339 as Connection6269
+        connect S4.a_in Junction340 as Connection6271
+        connect Junction340 Junction261 as Connection6272
+        [
+            breakpoints = 9200, 7832; 9208, 7832; 9208, 7832; 9184, 7832
+        ]
+        connect "Core Coupling 1.a_out" Junction340 as Connection6273
+    }
+
+    default {
+        "core/C function" {
+            input_terminals = "real in;"
+            input_terminals_show_labels = "False;"
+            input_terminals_feedthrough = "True;"
+            input_terminals_dimensions = "inherit;"
+            output_terminals = "real out;"
+            output_terminals_show_labels = "False;"
+            output_terminals_feedthrough = "True;"
+            output_terminals_dimensions = "inherit;"
+            output_fnc = ""
+            update_fnc = ""
+            init_fnc = ""
+            global_variables = ""
+            parameters = ""
+            library_load_type = "Compile-time load"
+            dll_file_path = ""
+            dll_file_path_full = ""
+            arm_a9_file_path = ""
+            arm_a9_file_path_full = ""
+            arm_a53_file_path = ""
+            arm_a53_file_path_full = ""
+            h_file_path = ""
+            h_file_path_full = ""
+            add_src_path = ""
+            add_src_path_full = ""
+            convert_to_relative_dll = "True"
+            convert_to_relative_a = "True"
+            convert_to_relative_src = "True"
+            arb_defs = ""
+            add_macros = ""
+            skip_pre_cmpl_check = "False"
+            generate_for_hil = "True"
+            execution_rate = "inherit"
+            _supported_platforms = "[\'generic\']"
+            refresh = "refresh"
+        }
+
+        "core/Capacitor" {
+            signal_access = "inherit"
+            capacitance = "1e-6"
+            initial_voltage = "0"
+            pole_shift_ignore = "False"
+            visible = "True"
+        }
+
+        "core/Constant" {
+            value = "1"
+            signal_type = "real"
+            execution_rate = "100e-6"
+            _tunable = "False"
+        }
+
+        "core/Core Marker" {
+            marker_id = "id0"
+        }
+
+        "core/Digital Probe" {
+            signal_access = "inherit"
+            override_signal_name = "False"
+            signal_name = ""
+            streaming_en = "False"
+            addr = "0"
+            streaming_er_idx = "0"
+            execution_rate = "inherit"
+        }
+
+        "core/HIL Flags Status" {
+            signal_type = "real"
+            execution_rate = "100e-6"
+            _supported_platforms = "[\'hil\', \'vhil\']"
+        }
+
+        "core/Inductor" {
+            signal_access = "inherit"
+            inductance = "1e-3"
+            initial_current = "0.0"
+            pole_shift_ignore = "False"
+            visible = "True"
+        }
+
+        "core/Logical operator" {
+            operator = "AND"
+            inputs = "2"
+            execution_rate = "inherit"
+        }
+
+        "core/Multiport signal switch" {
+            number_of_input_terminals = "2"
+            execution_rate = "inherit"
+        }
+
+        "core/Probe" {
+            signal_access = "inherit"
+            addr = "0"
+            override_signal_name = "False"
+            signal_name = ""
+            signal_type = "generic"
+            streaming_en = "False"
+            streaming_er_idx = "0"
+            execution_rate = "inherit"
+        }
+
+        "core/Resistor" {
+            resistance = "1"
+            param_set = ""
+        }
+
+        "core/SCADA Input" {
+            addr = "0"
+            format = "real"
+            override_signal_name = "False"
+            signal_name = ""
+            signal_type = "real"
+            min = "-1e6"
+            max = "1e6"
+            def_value = "0"
+            unit = " "
+            execution_rate = "100e-6"
+        }
+
+        "core/Sum" {
+            signs = "2"
+            execution_rate = "inherit"
+        }
+
+        "core/Voltage Source" {
+            sig_input = "False"
+            type = "signal generator"
+            param_set = "1phase"
+            parent_label = ""
+            addr = "0"
+            spc_nb = "0"
+            execution_rate = "100e-6"
+            cpd_visible = "True"
+            enable_snb = "False"
+            snb_type = "R2"
+            R2 = "0.0"
+            L1 = "0.1"
+            override_signal_name = "False"
+            signal_name = ""
+            init_source_nature = "Constant"
+            init_const_value = "0.0"
+            init_rms_value = "0.0"
+            init_frequency = "50.0"
+            init_phase = "0.0"
+        }
+
+        "core/Current Measurement" {
+            signal_access = "inherit"
+            bw_limit = "False"
+            frequency = "10e3"
+            comparator_enable = "False"
+            operator = "greater"
+            threshold = "0"
+            cmp_abs_value = "False"
+            feed_forward = "false"
+            sig_output = "False"
+            sig_output_filt_and_full_bw = "False"
+            execution_rate = "100e-6"
+            addr = "0"
+            nd_msr_estimation = "false"
+            dev_cpl_msr = "false"
+            host_device = "0"
+            output_to_device = "0"
+            dev_cpl_index = "0"
+            dev_cpl_var_nb = "0"
+            visible = "True"
+            override_signal_name = "False"
+            signal_name = ""
+        }
+
+        "core/Rate Transition" {
+            init_value = "0.0"
+            execution_rate = "100e-6"
+            _supported_platforms = "[\'generic\']"
+        }
+
+        "core/Single Phase Inverter" {
+            signal_access = "inherit"
+            ctrl_src = "Digital input per switch"
+            op_mode = "Fixed carrier frequency"
+            carrier_freq = "10000.0"
+            phase_op_mode = "Fixed carrier phase offset"
+            carr_ph_offset = "[0.0, 180.0]"
+            d_time = "5e-6"
+            ref_sig_min_max = "[-1.0, 1.0]"
+            load_mode = "on min"
+            execution_rate = "inherit"
+            Sa_top = "1"
+            Sa_top_logic = "active high"
+            Sa_bot = "2"
+            Sa_bot_logic = "active high"
+            Sb_top = "3"
+            Sb_top_logic = "active high"
+            Sb_bot = "4"
+            Sb_bot_logic = "active high"
+            Sa_top_I = "False"
+            Sa_bot_I = "False"
+            Sb_top_I = "False"
+            Sb_bot_I = "False"
+            losses_estimation = "False"
+            fvd_def_method = "Voltage and Resistance"
+            Import_igbt_xml = "not selected"
+            Import_diode_xml = "not selected"
+            Switch_type = "IGBT"
+            Vce = "1.3"
+            Rce = "0"
+            Vd = "1.2"
+            Rd = "0"
+            i_sw = "[0.0, 6.0, 12.0, 18.0, 24.0]"
+            v_sw = "[0.0, 600.0]"
+            temp_sw = "[25.0, 50.0, 75.0, 100.0, 125.0]"
+            vce_table_out = "[1.3, 1.3, 1.3, 1.3, 1.3]"
+            vd_table_out = "[1.2, 1.2, 1.2, 1.2, 1.2]"
+            et_on_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*3.8e-3, 0.4*3.8e-3, 0.8*3.8e-3, 0.68*3.8e-3, 0.9*3.8e-3], [0.65*3.8e-3, 0.9*3.8e-3, 1.2*3.8e-3, 1.5*3.8e-3, 1.7*3.8e-3], [0.9*3.8e-3, 1.3*3.8e-3, 1.7*3.8e-3, 1.9*3.8e-3, 2.25*3.8e-3], [1.1*3.8e-3, 1.7*3.8e-3, 2.1*3.8e-3, 2.3*3.8e-3, 2.5*3.8e-3]]"
+            et_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.1e-3, 0.4*2.1e-3, 0.8*2.1e-3, 0.68*2.1e-3, 0.9*2.1e-3], [0.65*2.1e-3, 0.9*2.1e-3, 1.2*2.1e-3, 1.5*2.1e-3, 1.7*2.1e-3], [0.9*2.1e-3, 1.3*2.1e-3, 1.7*2.1e-3, 1.9*2.1e-3, 2.25*2.1e-3], [1.1*2.1e-3, 1.7*2.1e-3, 2.1*2.1e-3, 2.3*2.1e-3, 2.5*2.1e-3]]"
+            ed_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.2e-3, 0.4*2.2e-3, 0.8*2.2e-3, 0.68*2.2e-3, 0.9*2.2e-3], [0.65*2.2e-3, 0.9*2.2e-3, 1.2*2.2e-3, 1.5*2.2e-3, 1.7*2.2e-3], [0.9*2.2e-3, 1.3*2.2e-3, 1.7*2.2e-3, 1.9*2.2e-3, 2.25*2.2e-3], [1.1*2.2e-3, 1.7*2.2e-3, 2.1*2.2e-3, 2.3*2.2e-3, 2.5*2.2e-3]]"
+            temp_estimation = "False"
+            thermal_networks_type = "Foster"
+            switch_Rth = "[0.159, 0.133, 0.120, 0.038]"
+            switch_Tth = "[1.1e-1, 1.56e-2, 1.35e-3, 1.51e-4]"
+            switch_Cth = "[0.0029, 0.0097, 0.1068, 0.8500]"
+            diode_Rth = "[0.159, 0.133, 0.120, 0.038]"
+            diode_Tth = "[1.1e-1, 1.56e-2, 1.35e-3, 1.51e-4]"
+            diode_Cth = "[0.0029, 0.0097, 0.1068, 0.8500]"
+            loss_exec_rate = "100e-6"
+            visualize_luts = "Visualize Lookup Tables"
+            show_monitoring = "False"
+            FSM_select = "converter"
+            _control_property = "all high"
+            switches_names_at_mask = "[]"
+            pwm_enabling = "False"
+            pwm_enable_di = "13"
+            pwm_enable_inv = "active high"
+            dtv_flag_en = "True"
+            PESB_Optimization = "True"
+            dynamic_ac_voltage = "False"
+        }
+
+        "core/Single Phase TLM Core Coupling" {
+            type = "Inductive"
+            capacitance = "1e-06"
+            inductance = "1e-3"
+            embedded_components = "False"
+            ratio_type = "Automatic"
+            ratio = "0.1"
+            embedded_inductors_initial_current = "0.0"
+            embedded_capacitors_initial_voltage = "0.0"
+        }
+
+        "core/Single Pole Single Throw Contactor" {
+            signal_access = "inherit"
+            ctrl_src = "Digital input"
+            Sa = "1"
+            Sa_logic = "active high"
+            enable_fb_out = "False"
+            fb_out_type = "real"
+            execution_rate = "inherit"
+            initial_state = "off"
+            on_delay = "0"
+            off_delay = "0"
+            switching = "any current"
+            hide_int_meas = "False"
+        }
+
+        "core/Voltage Measurement" {
+            signal_access = "inherit"
+            bw_limit = "False"
+            frequency = "10e3"
+            comparator_enable = "False"
+            operator = "greater"
+            threshold = "0"
+            cmp_abs_value = "False"
+            feed_forward = "false"
+            sig_output = "False"
+            sig_output_filt_and_full_bw = "False"
+            execution_rate = "100e-6"
+            addr = "0"
+            nd_msr_estimation = "false"
+            dev_cpl_msr = "false"
+            host_device = "0"
+            output_to_device = "0"
+            dev_cpl_index = "0"
+            dev_cpl_var_nb = "0"
+            visible = "True"
+            override_signal_name = "False"
+            signal_name = ""
+        }
+    }
+
+    CODE model_init
+        # Numpy module is imported as 'np'
+        # Scipy module is imported as 'sp'
+        # The Schematic API is imported as 'mdl'
+        # To get the model file path, use 'mdl.get_model_file_path()'
+        # To print information to the console, use info()
+        F_CI    = 10e3;
+        TS_CI   = 0.0001;
+        
+        F_CV    = 5e3;
+        TS_CV   = 0.0002;
+        
+        F_CP    = 2e3;
+        TS_CP   = 0.0005;
+        
+        F_DP    = 2e3;
+        TS_DP   = 0.0005;
+        
+        F_UGC    = 1000;
+        TS_UGC   = 0.001;
+    ENDCODE
+}
