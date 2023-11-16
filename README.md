@@ -4,7 +4,9 @@
 
 This repository contains the digital implementation of a Microgrid (MR) simulation using the Typhoon HIL 402 real-time simulator and the Typhoon HIL Control Center software. The physical platform for simulation is Typhoon HIL 402, and the software tool used is the Typhoon HIL Control Center provided by the same manufacturer. The electrical circuit of the MR within the Schematic Editor using software blocks can be seen in the Figure below.
 
-<img src="https://github.com/Paesee/microgrid/assets/41019170/ed41f9ef-f9eb-4695-938b-238687d738d4" alt="HIL_microgrid" height="400">
+<p align="center">
+  <img src="https://github.com/Paesee/microgrid/assets/41019170/ed41f9ef-f9eb-4695-938b-238687d738d4" alt="HIL_microgrid" height="400">
+</p>
 
 *Figure 1: Microgrid schematic within the HIL Control Center. Source: Author.*
 
