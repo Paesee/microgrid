@@ -2,6 +2,8 @@ This repository contains the digital implementation of a Microgrid (MR) simulati
 
 Microgrid Schematic
 
+![CIRC_microgrid](https://github.com/Paesee/microgrid/assets/41019170/068a8b51-f0cc-43f7-8fee-e48153d359bb)
+
 Figure 1: Microgrid schematic within the HIL Control Center. Source: Author.
 
 The simulation step, determined based on the processing capacity of HIL and the computational load demanded by the circuit and control algorithms, was set to 0.5 $\mu s$. For system interaction, the HIL SCADA was employed, providing a user-friendly graphical interface for real-time changes to the simulated plant through programmable Python actions. The oscilloscope available in HIL SCADA was used to extract the results presented in the next section.
@@ -14,8 +16,7 @@ This approach is advantageous as it adds a layer of abstraction, easing the read
 
 Table 1: Implementation of Control Algorithms using Libraries
 
-scss
-Copy code
+
 | Line | Code |
 |------|------|
 | 1    | generateReference(&vc, v_ref, w_ref, &v_signal, &theta); |
