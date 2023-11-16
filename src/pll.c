@@ -1,4 +1,4 @@
-#include "sogi_qsg.h"
+#include "pll.h"
 
 /* SOGI FUNCTIONS IMPLEMENTATION */
 
@@ -52,6 +52,37 @@ void executeSOGI(SOGIqsg *sogi, float meas_signal, float *alpha_signal, float *b
   *alpha_signal = alpha;
   *beta_signal = beta;
   *frequency = 0.15915494309 * w; // from rad/s to Hz
+}
+
+/* SRL PLL FUNCTIONS IMPLEMENTATION */
+
+void SRFpllInit(SRFpll *self, float w0){
+  self->omega0 = w0;
+  self->last_vq = 0;
+  self->last_pi_output = 0;
+  self->last_sum = 0;
+  self->last_theta = 0;
+}
+
+void executeSRFpll(SRFpll *self, float x_alpha, float x_beta, float *output){
+  float sin_wt = sin(self->last_theta);
+  float cos_wt = cos(self->last_theta);
+  float vq = -sin_wt * x_alpha + cos_wt * x_beta;
+  float pi_output = SRF_GAIN_1 * vq + SRF_GAIN_2 * self->last_vq - SRF_GAIN_3 * self->last_pi_output;
+  float sum = self->omega0 + pi_output;
+  float theta =  SRF_TS * sum + self->last_theta; 
+
+  self->last_vq = vq;
+  self->last_pi_output = pi_output;
+  self->last_sum = sum;
+  self->last_theta = theta;
+
+  *output = theta;
+}
+
+void resetSRFpll(SRFpll *self)
+{
+  self->last_theta = 0;
 }
 
 /* CIRCULAR BUFFER FUNCTIONS IMPLEMENTATION */
@@ -151,35 +182,4 @@ void calculateRMSvalue(RMSCalculator *rms, float *rms_value)
 void RMSCalculatorFree(RMSCalculator *rms)
 {
   circularBufferFree(&rms->square_buffer);
-}
-
-/* SRL PLL FUNCTIONS IMPLEMENTATION */
-
-void SRFpllInit(SRFpll *self, float w0){
-  self->omega0 = w0;
-  self->last_vq = 0;
-  self->last_pi_output = 0;
-  self->last_sum = 0;
-  self->last_theta = 0;
-}
-
-void executeSRFpll(SRFpll *self, float x_alpha, float x_beta, float *output){
-  float sin_wt = sin(self->last_theta);
-  float cos_wt = cos(self->last_theta);
-  float vq = -sin_wt * x_alpha + cos_wt * x_beta;
-  float pi_output = SRF_GAIN_1 * vq + SRF_GAIN_2 * self->last_vq - SRF_GAIN_3 * self->last_pi_output;
-  float sum = self->omega0 + pi_output;
-  float theta =  SRF_TS * sum + self->last_theta; 
-
-  self->last_vq = vq;
-  self->last_pi_output = pi_output;
-  self->last_sum = sum;
-  self->last_theta = theta;
-
-  *output = theta;
-}
-
-void resetSRFpll(SRFpll *self)
-{
-  self->last_theta = 0;
 }

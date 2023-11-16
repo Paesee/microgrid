@@ -30,7 +30,11 @@
       "random": "c",
       "sogi_qsg.h": "c",
       "string_view": "c",
-      "initializer_list": "c"
+      "initializer_list": "c",
+      "grid_following.h": "c",
+      "grid_forming.h": "c",
+      "microgrid.h": "c",
+      "math.h": "c"
     }
   }
 }

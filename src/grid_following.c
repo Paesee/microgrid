@@ -1,4 +1,4 @@
-#include "grid_following_inverter.h"
+#include "grid_following.h"
 
 /* POWER CONTROLLER FUNCTIONS IMPLEMENTATION */
 
