@@ -28,3 +28,22 @@ arm-xilinx-eabi-gcc -Iinclude -c src\grid_following.c -o object\grid_following.o
 arm-xilinx-eabi-gcc -Iinclude -c src\pll.c -o object\pll.o
 arm-xilinx-eabi-gcc -Iinclude -c src\microgrid.c -o object\microgrid.o
 arm-xilinx-eabi-ar rcs lib\libmicrogrid.a object\grid_forming.o object\grid_following.o object\pll.o object\microgrid.o
+
+## Advantages of the Approach
+
+This approach is advantageous as it adds a layer of abstraction, easing the readability and execution of control routines. As shown in Table 1, generating the voltage control reference signal, obtained through integrating the angular velocity $w_{ref}$, calculating the sine function, multiplying by the magnitude $v_{ref}$, executing the controller's difference equation, and exporting the result to HIL are condensed into three lines of code.
+
+### Table 1: Implementation of Control Algorithms using Libraries
+
+| Line | Code                                               |
+|------|----------------------------------------------------|
+| 1    | `generateReference(&vc, v_ref, w_ref, &v_signal, &theta);` |
+| 2    | `executeVoltageControl(&vc, v_signal, in_vc, &u);`       |
+| 3    | `out_u = u;`                                              |
+
+## Controller Equations
+
+The difference equations of the controllers were derived from implementing systems in continuous-time in Matlab. The transformation of these transfer functions was achieved using the `continue2discrete` (c2d) function with the Tustin discretization method. Once in the Z-domain equation, the inverse Z-transform is applied, resulting in a difference equation implementable in real-time digital systems.
+
+### Reference:
+[1] [Typhoon HIL Software Manual - C Function Documentation](https://www.typhoon-hil.com/documentation/typhoon-hil-software-manual/References/c_function.html)
