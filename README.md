@@ -24,7 +24,7 @@ Once the libraries were written, they are pre-compiled into static libraries (.a
 
 To generate .a files, the following lines should be executed:
 
-```bash
+```powershell
 arm-xilinx-eabi-gcc -Iinclude -c src\grid_forming.c -o object\grid_forming.o
 arm-xilinx-eabi-gcc -Iinclude -c src\grid_following.c -o object\grid_following.o
 arm-xilinx-eabi-gcc -Iinclude -c src\pll.c -o object\pll.o
