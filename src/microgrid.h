@@ -23,6 +23,7 @@ void ug_add2CircularBuffer(ug_CircularBuffer *cb, float data);
 float ug_getElement(ug_CircularBuffer *cb, int n);
 void ug_circularBufferFree(ug_CircularBuffer *cb);
 void ug_plotBufferFromStartToEnd(ug_CircularBuffer *cb);
+void ug_clearCircularBuffer(ug_CircularBuffer *cb);
 
 /* MICROGRID CONTROLLER */
 

@@ -55,12 +55,27 @@ void executePQControl(PowerControl *pc, float *id, float *iq)
 
 /* CURRENT CONTROLLER FUNCTIONS IMPLEMENTATION */
 
-void CurrentControlInit(CurrentControl *cc)
+void CurrentControlInit(CurrentControl *cc, float g1, float g2, float g3, float g4, float g5)
 {
-  cc->last_u = 0;
-  cc->sec_last_u = 0;
-  cc->last_error = 0;
-  cc->sec_last_error = 0;
+  {
+    cc->last_u = 0;
+    cc->sec_last_u = 0;
+    cc->last_error = 0;
+    cc->sec_last_error = 0;
+    cc->GAIN_1 = g1;
+    cc->GAIN_2 = g2;
+    cc->GAIN_3 = g3;
+    cc->GAIN_4 = g4;
+    cc->GAIN_5 = g5;
+  }
+}
+void setControllerGain(CurrentControl *cc, float g1, float g2, float g3, float g4, float g5)
+{
+  cc->GAIN_1 = g1;
+  cc->GAIN_2 = g2;
+  cc->GAIN_3 = g3;
+  cc->GAIN_4 = g4;
+  cc->GAIN_5 = g5;
 }
 
 void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt, float cos_wt, float i_meas, float *u, float *ref_wave)
@@ -69,15 +84,16 @@ void executeCurrentControl(CurrentControl *cc, float id, float iq, float sin_wt,
 
   float error = i_alpha - i_meas;
 
-  float ctrl_action = C_GAIN_1 * error + C_GAIN_2 * cc->last_error + C_GAIN_3 * cc->sec_last_error - C_GAIN_4 * cc->last_u - C_GAIN_5 * cc->sec_last_u;
+  float ctrl_action = cc->GAIN_1 * error + cc->GAIN_2 * cc->last_error + cc->GAIN_3 * cc->sec_last_error - cc->GAIN_4 * cc->last_u - cc->GAIN_5 * cc->sec_last_u;
 
-  float aux = (ctrl_action > 500) ? 500 : (ctrl_action < -500) ? -500 : ctrl_action;
+  float aux = (ctrl_action > 500) ? 500 : (ctrl_action < -500) ? -500
+                                                               : ctrl_action;
 
   cc->sec_last_error = cc->last_error;
   cc->last_error = error;
   cc->sec_last_u = cc->last_u;
   cc->last_u = aux;
-  
+
   *u = aux * 0.002;
   *ref_wave = i_alpha;
 }

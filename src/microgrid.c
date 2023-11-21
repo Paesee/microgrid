@@ -65,6 +65,21 @@ void ug_plotBufferFromStartToEnd(ug_CircularBuffer *cb)
   printf("\n");
 }
 
+void ug_clearCircularBuffer(ug_CircularBuffer *cb)
+{
+  int i = 0;
+  cb->start = 0;
+  cb->end = 0;
+  cb->count = 0;
+  if (cb->buff != NULL)
+  {
+    for (i = 0; i < cb->size; ++i)
+    {
+      cb->buff[i] = 0;
+    }
+  }
+}
+
 // MICROGRID CONTROLLER FUNCTIONS IMPLEMENTATION
 
 // function to iniatilize uGridController
@@ -128,6 +143,8 @@ int tieHandler(uGridController *self, float delta_theta, float delta_v)
       // if voltage and phase angle are within the limits, the controller allows connection
       if (average_delta_theta < MAX_THETA_DIF && average_delta_v < MAX_VOLTAGE_DIF)
       {
+        ug_clearCircularBuffer(&self->delta_theta);
+        ug_clearCircularBuffer(&self->delta_v);
         self->ugrid_status = TIED2GRID;
         return 1;
       }

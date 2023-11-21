@@ -4,7 +4,7 @@ version = 4.2
 // Saved by sw version: 2023.4
 //
 
-model "microgrid_r1" {
+model "microgrid_schematic" {
     configuration {
         hil_device = "HIL402"
         hil_configuration_id = 3

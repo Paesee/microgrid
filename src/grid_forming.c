@@ -111,7 +111,7 @@ void generateReference(VoltageControl *vc, float v_rms, float w, float *sin_wt, 
   // used to generate theta for sine function
   float theta = TSV * w + vc->last_theta;
   if (theta >= TWO_PI)
-    theta = 0;
+    theta -= TWO_PI;
   vc->last_theta = theta;
   // output voltage reference wave
   *sin_wt = SQRT2 * v_rms * sin(theta);
